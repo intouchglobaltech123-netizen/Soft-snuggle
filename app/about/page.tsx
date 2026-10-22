@@ -1,0 +1,20 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { Story } from "@/components/home/Story";
+
+export const metadata: Metadata = { title: "About" };
+
+export default function AboutPage() {
+  return (
+    <div className="speckle">
+      <div className="pt-16">
+        <Story />
+      </div>
+      <div className="pb-24 text-center">
+        <Link href="/shop" className="btn-primary">
+          Shop the collection →
+        </Link>
+      </div>
+    </div>
+  );
+}

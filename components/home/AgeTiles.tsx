@@ -1,0 +1,87 @@
+"use client";
+
+import Link from "next/link";
+import { motion, useScroll, useSpring, useTransform } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { AGE_GROUPS } from "@/lib/store";
+import { COLLECTIONS } from "@/lib/collections";
+import { Baby } from "../art/Baby";
+
+const LOOKS = [COLLECTIONS[5].look, COLLECTIONS[3].look, COLLECTIONS[1].look, COLLECTIONS[4].look];
+const NOTES = [
+  "Snug, gentle firsts for the fourth trimester.",
+  "Easy snaps for the many, many changes.",
+  "Stretchy fits for rolling, sitting and crawling.",
+  "Room to run, climb and say “mine”.",
+];
+
+/** Vertical scroll drives a horizontal ride through the age groups. */
+export function AgeTiles({ counts }: { counts: Record<string, number> }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [distance, setDistance] = useState(0);
+  const [vh, setVh] = useState(800);
+
+  useEffect(() => {
+    const measure = () => {
+      if (!trackRef.current) return;
+      setDistance(Math.max(0, trackRef.current.scrollWidth - window.innerWidth));
+      setVh(window.innerHeight);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
+  const rawX = useTransform(scrollYProgress, [0, 1], [0, -distance]);
+  const x = useSpring(rawX, { stiffness: 120, damping: 30, mass: 0.4 });
+  const bar = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+
+  return (
+    <section id="shop-by-age" ref={sectionRef} className="relative" style={{ height: distance + vh }}>
+      <div className="sticky top-0 flex h-[100svh] flex-col justify-center overflow-hidden">
+        <motion.div ref={trackRef} className="flex w-max items-stretch gap-5 px-6 sm:gap-8 sm:px-12" style={{ x }}>
+          <div className="flex w-[78vw] shrink-0 flex-col justify-center sm:w-[40vw] lg:w-[30vw]">
+            <p className="eyebrow">Shop by age</p>
+            <h2 className="mt-4 font-display text-5xl leading-[1.02] tracking-tight sm:text-6xl lg:text-7xl">
+              A fit for every <em className="text-sage-deep">little leap</em>
+            </h2>
+            <p className="mt-5 max-w-sm text-lg text-ink-soft">Comfy favourites for every new chapter. Keep scrolling to meet them all →</p>
+            <div className="mt-8 h-1 w-40 overflow-hidden rounded-full bg-line">
+              <motion.div className="h-full bg-ink" style={{ width: bar }} />
+            </div>
+          </div>
+
+          {AGE_GROUPS.map((g, i) => (
+            <Link
+              key={g.slug}
+              href={`/shop?age=${g.slug}`}
+              className="group relative flex h-[64svh] w-[78vw] shrink-0 flex-col overflow-hidden rounded-[36px] p-7 sm:w-[46vw] sm:p-9 lg:w-[34vw]"
+              style={{ background: g.tint }}
+            >
+              <div className="flex items-start justify-between">
+                <span className="font-display text-lg text-ink/50">0{i + 1}</span>
+                <span className="rounded-full bg-paper/70 px-3 py-1 text-xs font-bold">
+                  {counts[g.slug] ?? 0} pieces
+                </span>
+              </div>
+              <div className="relative z-10 mt-2">
+                <h3 className="font-display text-5xl tracking-tight sm:text-6xl">{g.title}</h3>
+                <p className="mt-1 text-sm font-extrabold uppercase tracking-[0.2em] text-ink/60">{g.range}</p>
+                <p className="mt-3 max-w-[16rem] text-ink-soft">{NOTES[i]}</p>
+              </div>
+              <div className="pointer-events-none absolute -bottom-4 right-2 aspect-[220/320] h-[62%] transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:-translate-y-4 group-hover:rotate-[-4deg] sm:right-6">
+                <Baby look={LOOKS[i]} className="h-full w-full" />
+              </div>
+              <span className="relative z-10 mt-auto inline-flex w-fit items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-paper transition-all group-hover:gap-4">
+                Shop {g.title} <span aria-hidden>→</span>
+              </span>
+            </Link>
+          ))}
+          <div className="w-2 shrink-0" />
+        </motion.div>
+      </div>
+    </section>
+  );
+}
