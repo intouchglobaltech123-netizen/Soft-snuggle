@@ -9,6 +9,8 @@ import { ShopBanner } from "./ShopBanner";
 
 const TABS = [
   { key: "all", label: "All" },
+  { key: "frock", label: "Frocks" },
+  { key: "jabla", label: "Jablas" },
   { key: "bodysuit", label: "Bodysuits" },
   { key: "romper", label: "Rompers" },
   { key: "gift-set", label: "Gift Sets" },

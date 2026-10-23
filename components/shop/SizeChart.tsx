@@ -34,8 +34,8 @@ const CHARTS = {
 
 type ChartKey = keyof typeof CHARTS;
 
-export function SizeChart({ highlight }: { highlight?: string | null }) {
-  const [chart, setChart] = useState<ChartKey>("frock");
+export function SizeChart({ highlight, initial = "frock" }: { highlight?: string | null; initial?: ChartKey }) {
+  const [chart, setChart] = useState<ChartKey>(initial);
   const c = CHARTS[chart];
 
   return (

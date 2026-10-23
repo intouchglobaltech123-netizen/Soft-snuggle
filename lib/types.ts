@@ -1,4 +1,4 @@
-export type Category = "bodysuit" | "romper" | "gift-set";
+export type Category = "frock" | "jabla" | "bodysuit" | "romper" | "gift-set";
 
 export interface Product {
   id: number;

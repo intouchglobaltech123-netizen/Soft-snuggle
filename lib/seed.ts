@@ -22,6 +22,7 @@ interface SeedProduct {
 // Matches the Frock / Jabla size charts (components/shop/SizeChart.tsx)
 const BODYSUIT_SIZES = ["0–3M", "3–6M", "6–9M", "9–12M"];
 const ROMPER_SIZES = ["3–6M", "6–9M", "9–12M"];
+const CHART_SIZES = ["0–3M", "3–6M", "6–9M", "9–12M"];
 const SET_SIZES = ["0–3M", "3–6M"];
 const CARE = "Machine wash cold, inside out, with similar colours. Tumble dry low. No bleach, no fuss.";
 
@@ -32,6 +33,39 @@ function groupsFor(sizes: string[]) {
 // Placeholder catalogue taken from the Soft Snuggle PDF. Sizes and copy are
 // stand-ins until the client sends the real product sheet.
 const RAW: Omit<SeedProduct, "ageGroups">[] = [
+  // Real Soft Snuggle pieces (photos in public/products/<slug>). Prices are placeholders.
+  {
+    slug: "cherry-frock",
+    name: "Cherry Bloom Frock",
+    category: "frock",
+    fabric: "Soft muslin cotton",
+    colour: "Butter yellow, cherry print",
+    price: 699,
+    badge: "New",
+    organic: false,
+    sizes: CHART_SIZES,
+    description:
+      "A twirl-ready sleeveless frock in breathable muslin, scattered with little red cherries. Gathered waist, a comfy round neck and snap buttons at the back for quick, easy changes.",
+    care: "Hand wash or gentle machine wash cold. Dry in shade. Do not bleach.",
+    tint: "#F6EFD3",
+    garment: "#F3EBC4",
+  },
+  {
+    slug: "cherry-jabla",
+    name: "Cherry Bloom Jabla",
+    category: "jabla",
+    fabric: "Soft muslin cotton",
+    colour: "Butter yellow, cherry print",
+    price: 449,
+    badge: "New",
+    organic: false,
+    sizes: CHART_SIZES,
+    description:
+      "A classic sleeveless jabla in soft, breathable muslin with a sweet cherry print. Snap buttons all the way down the front make dressing a wriggly baby quick and easy.",
+    care: "Hand wash or gentle machine wash cold. Dry in shade. Do not bleach.",
+    tint: "#F3EBD6",
+    garment: "#F3EBC4",
+  },
   {
     slug: "everyday-bodysuit",
     name: "The Everyday Bodysuit",

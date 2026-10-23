@@ -64,6 +64,36 @@ export function Garment({ category, color, className, back }: Props) {
         </g>
       )}
 
+      {category === "frock" && (
+        <g filter={`url(#s-${uid})`}>
+          <path
+            d="M76 30 Q100 46 124 30 L140 36 Q133 58 136 86 L132 94 Q152 128 168 172 Q100 186 32 172 Q48 128 68 94 L64 86 Q67 58 60 36 Z"
+            fill={fill}
+          />
+          <path d="M76 30 Q100 46 124 30" stroke={line} strokeWidth="2.5" fill="none" />
+          <path d="M66 95 Q100 104 134 95" stroke={line} strokeWidth="2" fill="none" />
+          {[78, 92, 108, 122].map((x) => (
+            <path key={x} d={`M${x} 100 Q${x - 6} 135 ${x - 12} 170`} stroke={line} strokeWidth="1.4" fill="none" opacity="0.6" />
+          ))}
+          {!back && <Motif x={100} y={66} ink={ink} small />}
+        </g>
+      )}
+
+      {category === "jabla" && (
+        <g filter={`url(#s-${uid})`}>
+          <path
+            d="M68 34 L86 32 Q94 58 100 72 Q106 58 114 32 L132 34 Q132 56 152 68 L152 160 Q100 170 48 160 L48 68 Q68 56 68 34 Z"
+            fill={fill}
+          />
+          <path d="M86 32 Q94 58 100 72 Q106 58 114 32" stroke={line} strokeWidth="2.5" fill="none" />
+          <path d="M100 72 L100 164" stroke={line} strokeWidth="2" />
+          {[92, 112, 132, 150].map((y) => (
+            <circle key={y} cx="100" cy={y} r="2.8" fill="#FDFBF6" stroke={line} strokeWidth="1" />
+          ))}
+          {!back && <Motif x={74} y={110} ink={ink} small />}
+        </g>
+      )}
+
       {category === "gift-set" && (
         <g filter={`url(#s-${uid})`}>
           <path d="M70 70 Q78 52 92 58 L100 70 L108 58 Q122 52 130 70" fill={shade(color, 0.3)} opacity="0.9" />

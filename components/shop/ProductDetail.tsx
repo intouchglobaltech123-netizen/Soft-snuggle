@@ -120,7 +120,7 @@ export function ProductDetail({ product }: { product: Product }) {
             )}
           </motion.div>
         </div>
-        {photos.length > 0 ? (
+        {photos.length === 1 ? null : photos.length > 1 ? (
           <div className="mt-4 flex justify-center gap-2">
             {photos.map((src, i) => (
               <button
@@ -210,7 +210,7 @@ export function ProductDetail({ product }: { product: Product }) {
                 exit={{ height: 0, opacity: 0 }}
                 className="overflow-hidden"
               >
-                <SizeChart highlight={size} />
+                <SizeChart highlight={size} initial={product.category === "jabla" ? "jabla" : "frock"} />
               </motion.div>
             )}
           </AnimatePresence>

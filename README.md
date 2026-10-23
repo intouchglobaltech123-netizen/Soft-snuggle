@@ -67,6 +67,7 @@ UPDATE orders SET status = 'cancelled', updated_at = now() WHERE code = 'SS-1042
 | Hero carousel slides (title, text, character look) | `lib/collections.ts` |
 | Baby characters (swap for 3D PNGs later) | `components/art/Baby.tsx` |
 | Product photos (front/back/close-up/lifestyle) | drop into `public/products/<slug>/1.jpg … 4.jpg` — prompts in `IMAGE-PROMPTS.md` |
+| Real photos on their own background | name them e.g. `1-photo.webp`, `2-photo.webp` (only files named exactly `1`/`2`/`3` are treated as white-background studio shots and blended into the card colour) |
 | Hero 3D characters | drop into `public/hero/<collection>.png` (white background) |
 | Product illustrations (shown until photos exist) | `components/art/Garment.tsx` |
 | Loading screen (clothesline) | `components/Loader.tsx` |

@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS products (
   id            SERIAL PRIMARY KEY,
   slug          TEXT UNIQUE NOT NULL,
   name          TEXT NOT NULL,
-  category      TEXT NOT NULL CHECK (category IN ('bodysuit', 'romper', 'gift-set')),
+  category      TEXT NOT NULL,
   fabric        TEXT NOT NULL,
   colour        TEXT NOT NULL,
   price         INTEGER NOT NULL CHECK (price >= 0),
@@ -22,6 +22,11 @@ CREATE TABLE IF NOT EXISTS products (
   sort          INTEGER NOT NULL DEFAULT 0,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Allowed categories (re-applied on every start so new ones reach existing databases)
+ALTER TABLE products DROP CONSTRAINT IF EXISTS products_category_check;
+ALTER TABLE products ADD CONSTRAINT products_category_check
+  CHECK (category IN ('frock', 'jabla', 'bodysuit', 'romper', 'gift-set'));
 
 CREATE TABLE IF NOT EXISTS orders (
   id              SERIAL PRIMARY KEY,
