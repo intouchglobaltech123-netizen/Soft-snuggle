@@ -57,7 +57,7 @@ export function AgeTiles({ counts }: { counts: Record<string, number> }) {
             <Link
               key={g.slug}
               href={`/shop?age=${g.slug}`}
-              className="group relative flex h-[64svh] w-[78vw] shrink-0 flex-col overflow-hidden rounded-[36px] p-7 sm:w-[46vw] sm:p-9 lg:w-[34vw]"
+              className="group relative flex h-[64svh] w-[78vw] lg:h-[72svh] shrink-0 flex-col overflow-hidden rounded-[36px] p-7 sm:w-[46vw] sm:p-9 lg:w-[34vw]"
               style={{ background: g.tint }}
             >
               <div className="flex items-start justify-between">
@@ -67,16 +67,19 @@ export function AgeTiles({ counts }: { counts: Record<string, number> }) {
                 </span>
               </div>
               <div className="relative z-10 mt-2">
-                <h3 className="font-display text-5xl tracking-tight sm:text-6xl">{g.title}</h3>
+                <h3 className="font-display text-5xl tracking-tight sm:text-6xl lg:text-5xl xl:text-6xl">{g.title}</h3>
                 <p className="mt-1 text-sm font-extrabold uppercase tracking-[0.2em] text-ink/60">{g.range}</p>
                 <p className="mt-3 max-w-[16rem] text-ink-soft">{NOTES[i]}</p>
               </div>
-              <div className="pointer-events-none absolute -bottom-4 right-2 aspect-[220/320] h-[62%] transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:-translate-y-4 group-hover:rotate-[-4deg] sm:right-6">
-                <Baby look={LOOKS[i]} className="h-full w-full" />
-              </div>
-              <span className="relative z-10 mt-auto inline-flex w-fit items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-paper transition-all group-hover:gap-4">
+              <span className="relative z-10 mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-paper transition-all group-hover:gap-4">
                 Shop {g.title} <span aria-hidden>→</span>
               </span>
+              {/* The baby gets whatever height is left below the button, so the two never overlap */}
+              <div className="pointer-events-none -mb-4 mt-2 flex min-h-0 flex-1 items-end justify-end">
+                <div className="aspect-[220/320] h-full max-h-[300px] transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:-translate-y-3 group-hover:rotate-[-4deg]">
+                  <Baby look={LOOKS[i]} className="h-full w-full" />
+                </div>
+              </div>
             </Link>
           ))}
           <div className="w-2 shrink-0" />
