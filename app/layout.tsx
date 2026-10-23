@@ -22,7 +22,6 @@ export const metadata: Metadata = {
   title: { default: "Soft Snuggle · Little clothes, lots of love", template: "%s · Soft Snuggle" },
   description:
     "Soft, thoughtful baby essentials made for milk-drunk mornings, first wiggles and every cuddle in between. Organic cotton bodysuits, rompers and gift sets.",
-  icons: { icon: "/icon.svg" },
 };
 
 export const viewport: Viewport = { themeColor: "#F7F4EC" };

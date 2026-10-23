@@ -10,7 +10,7 @@ export default function ContactPage() {
   const cards = [
     {
       title: "WhatsApp",
-      body: "Fastest for orders, sizes and delivery questions.",
+      body: "Order 24×7, or ask about sizes and delivery.",
       cta: "Chat with us",
       href: `https://wa.me/${STORE.whatsappNumber}?text=${encodeURIComponent("Hi Soft Snuggle! ")}`,
       tint: "#DFE7DD",
@@ -42,7 +42,7 @@ export default function ContactPage() {
           <h1 className="mt-5 font-display text-5xl tracking-tight sm:text-6xl">
             Say <em className="text-sage-deep">hello</em>
           </h1>
-          <p className="mx-auto mt-3 max-w-md text-ink-soft">We&apos;re a small team and we reply to every message. Mon–Sat, 10am–7pm.</p>
+          <p className="mx-auto mt-3 max-w-md text-ink-soft">You can place your order anytime, 24×7. We&apos;re a small team and we reply to every message.</p>
         </Reveal>
         <div className="mt-12 grid gap-4 md:grid-cols-3">
           {cards.map((c, i) => (

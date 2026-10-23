@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { STORE } from "@/lib/store";
-import { FlowerMark } from "./art/FlowerMark";
+import { Logo } from "./art/Logo";
 import { WhatsAppIcon } from "./WhatsAppFab";
 
 const LINKS = [
   { href: "/shop", label: "Shop" },
+  { href: "/track", label: "Track order" },
   { href: "/policies/shipping", label: "Shipping" },
   { href: "/policies/returns", label: "Returns" },
   { href: "/policies/privacy", label: "Privacy" },
@@ -17,7 +18,10 @@ export function Footer() {
   return (
     <footer className="relative overflow-hidden border-t border-line bg-paper text-ink-soft">
       <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center gap-5 px-6 pt-10 text-center">
-        <FlowerMark className="h-7 w-7" />
+        <Logo className="h-12" />
+        <p className="inline-flex items-center gap-2 rounded-full bg-sage px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-ink">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-[#25D366]" /> Place orders anytime · 24×7
+        </p>
         <nav className="flex flex-wrap justify-center gap-x-7 gap-y-2">
           {LINKS.map((l) => (
             <Link key={l.href} href={l.href} className="text-[11px] font-bold uppercase tracking-[0.18em] transition-colors hover:text-ink">
@@ -43,15 +47,15 @@ export function Footer() {
             </svg>
           </a>
         </div>
+        <a href={`mailto:${STORE.email}`} className="text-sm hover:text-ink">
+          {STORE.email}
+        </a>
       </div>
 
-      {/* Big soft wordmark */}
-      <p
-        aria-hidden="true"
-        className="pointer-events-none mt-4 select-none whitespace-nowrap pb-[0.12em] text-center font-display text-[19vw] leading-[0.82] tracking-tighter text-sage lg:text-[12rem]"
-      >
-        soft <em>snuggle</em>
-      </p>
+      {/* Big soft logo watermark */}
+      <div aria-hidden="true" className="pointer-events-none mt-6 flex justify-center px-4 opacity-[0.16]">
+        <img src="/logo.webp" alt="" className="w-full max-w-4xl" draggable={false} />
+      </div>
 
       <div className="relative z-10 border-t border-line/70 py-4 text-center text-xs">
         © {new Date().getFullYear()} Soft Snuggle · Little clothes, lots of love

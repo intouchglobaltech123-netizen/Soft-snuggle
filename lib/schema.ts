@@ -47,6 +47,15 @@ CREATE TABLE IF NOT EXISTS orders (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS orders_code_idx ON orders (code);
 
+-- Delivery tracking, filled in by the owner as the order moves.
+-- status: new → confirmed → packed → shipped → out_for_delivery → delivered (or cancelled)
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS courier         TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS tracking_number TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS tracking_url    TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS confirmed_at    TIMESTAMPTZ;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipped_at      TIMESTAMPTZ;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivered_at    TIMESTAMPTZ;
+
 CREATE TABLE IF NOT EXISTS subscribers (
   id          SERIAL PRIMARY KEY,
   email       TEXT UNIQUE NOT NULL,

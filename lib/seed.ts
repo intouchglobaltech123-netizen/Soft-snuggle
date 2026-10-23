@@ -19,8 +19,9 @@ interface SeedProduct {
   garment: string;
 }
 
-const BODYSUIT_SIZES = ["0–3M", "3–6M", "6–12M", "12–18M"];
-const ROMPER_SIZES = ["3–6M", "6–12M", "12–18M", "18–24M"];
+// Matches the Frock / Jabla size charts (components/shop/SizeChart.tsx)
+const BODYSUIT_SIZES = ["0–3M", "3–6M", "6–9M", "9–12M"];
+const ROMPER_SIZES = ["3–6M", "6–9M", "9–12M"];
 const SET_SIZES = ["0–3M", "3–6M"];
 const CARE = "Machine wash cold, inside out, with similar colours. Tumble dry low. No bleach, no fuss.";
 

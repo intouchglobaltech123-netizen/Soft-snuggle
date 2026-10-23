@@ -2,6 +2,7 @@ import { FlowerMark } from "../art/FlowerMark";
 import { STORE, inr } from "@/lib/store";
 
 const ITEMS = [
+  "Place orders 24×7",
   "Cloud-soft cotton",
   "Kind to tiny skin",
   "Made to pass along",

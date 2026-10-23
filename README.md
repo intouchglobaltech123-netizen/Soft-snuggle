@@ -37,6 +37,28 @@ FROM orders ORDER BY id DESC;
    - **COD** → goes straight to the WhatsApp step.
 5. "Send order on WhatsApp" opens WhatsApp with a pre-filled message (items, total, UTR or COD, address). The customer taps Send.
 
+## Order tracking (no admin page)
+
+Customers check their order at `/track` with their order ID and mobile number. You move an order along by
+updating it in the database (Neon / Supabase console, TablePlus, pgAdmin, or `psql`):
+
+```sql
+-- payment checked / order confirmed
+UPDATE orders SET status = 'confirmed', payment_status = 'paid', confirmed_at = now(), updated_at = now() WHERE code = 'SS-1042';
+
+-- packed
+UPDATE orders SET status = 'packed', updated_at = now() WHERE code = 'SS-1042';
+
+-- handed to the courier (tracking_url is optional; without it the page links a search for the number)
+UPDATE orders SET status = 'shipped', courier = 'Delhivery', tracking_number = '1234567890',
+  tracking_url = NULL, shipped_at = now(), updated_at = now() WHERE code = 'SS-1042';
+
+-- out for delivery / delivered / cancelled
+UPDATE orders SET status = 'out_for_delivery', updated_at = now() WHERE code = 'SS-1042';
+UPDATE orders SET status = 'delivered', delivered_at = now(), updated_at = now() WHERE code = 'SS-1042';
+UPDATE orders SET status = 'cancelled', updated_at = now() WHERE code = 'SS-1042';
+```
+
 ## Where to change things
 
 | What | File |
@@ -48,6 +70,9 @@ FROM orders ORDER BY id DESC;
 | Hero 3D characters | drop into `public/hero/<collection>.png` (white background) |
 | Product illustrations (shown until photos exist) | `components/art/Garment.tsx` |
 | Loading screen (clothesline) | `components/Loader.tsx` |
+| Logo | `public/logo.webp` (favicon: `app/icon.png`) |
+| Size charts (Frock in inches, Jabla in cm) | `components/shop/SizeChart.tsx` |
+| Email, Instagram, WhatsApp | `lib/store.ts` / `.env.local` |
 | Age groups | `lib/store.ts` |
 | Policy page wording (drafts) | `app/policies/[slug]/page.tsx` |
 | Colours & fonts | `app/globals.css`, `app/layout.tsx` |

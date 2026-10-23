@@ -30,9 +30,11 @@ export function OrderFlow({ order, upiUrl, upiId, payee, qrSvg }: Props) {
   const [copied, setCopied] = useState(false);
   const [sent, setSent] = useState(false);
   const firstName = order.customerName.split(" ")[0];
+  const [trackUrl, setTrackUrl] = useState<string>();
 
   useEffect(() => {
     setIsMobile(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
+    setTrackUrl(`${window.location.origin}/track?code=${order.code}`);
   }, []);
 
   const saveUtr = async (e: React.FormEvent) => {
@@ -215,10 +217,10 @@ export function OrderFlow({ order, upiUrl, upiId, payee, qrSvg }: Props) {
                   : "We've written the message for you. WhatsApp will open, just tap Send."}
               </p>
               <pre className="mt-6 max-h-64 overflow-auto whitespace-pre-wrap rounded-2xl bg-[#E7F6E9] p-5 font-sans text-sm leading-relaxed text-ink" data-lenis-prevent>
-                {orderMessage(order, utr)}
+                {orderMessage(order, utr, trackUrl)}
               </pre>
               <motion.a
-                href={whatsappLink(orderMessage(order, utr))}
+                href={whatsappLink(orderMessage(order, utr, trackUrl))}
                 target="_blank"
                 rel="noreferrer"
                 onClick={() => setSent(true)}
@@ -278,7 +280,8 @@ export function OrderFlow({ order, upiUrl, upiId, payee, qrSvg }: Props) {
       </div>
 
       <p className="mt-8 text-center text-sm text-ink-soft">
-        Bookmark this page to come back to your order. <Link href="/shop" className="font-bold underline">Continue shopping</Link>
+        <Link href={`/track?code=${order.code}`} className="font-bold underline">Track this order</Link> anytime with your order ID and mobile number ·{" "}
+        <Link href="/shop" className="font-bold underline">Continue shopping</Link>
       </p>
     </div>
   );

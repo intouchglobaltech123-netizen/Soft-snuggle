@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { STORE, inr } from "@/lib/store";
-import { FlowerMark } from "./art/FlowerMark";
+import { Logo } from "./art/Logo";
 import { useCart } from "./providers/CartProvider";
 
 const LEFT = [
@@ -49,9 +49,15 @@ export function Navbar() {
     <>
       <header className="fixed inset-x-0 top-0 z-50">
         {/* Offer strip */}
-        <div className="bg-sage-deep px-4 py-1.5 text-center text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper sm:text-[11px]">
-          Free shipping over {inr(STORE.freeShippingAbove)}
-          <span className="hidden sm:inline"> · Cash on Delivery available</span>
+        <div className="relative bg-sage-deep px-4 py-1.5 text-center text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper sm:text-[11px]">
+          Place orders 24×7 · Free shipping over {inr(STORE.freeShippingAbove)}
+          <span className="hidden lg:inline"> · Cash on Delivery available</span>
+          <Link
+            href="/track"
+            className="absolute right-6 top-1/2 hidden -translate-y-1/2 underline decoration-paper/50 underline-offset-2 hover:decoration-paper md:block"
+          >
+            Track order
+          </Link>
         </div>
 
         {/* Main bar: links split around a centred logo */}
@@ -75,13 +81,8 @@ export function Navbar() {
                 </div>
               </div>
 
-              <Link href="/" className="flex items-center gap-2" aria-label="Soft Snuggle home">
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-sage">
-                  <FlowerMark className="h-[18px] w-[18px]" />
-                </span>
-                <span className="font-display text-lg tracking-tight">
-                  soft <em className="text-sage-deep">snuggle</em>
-                </span>
+              <Link href="/" className="flex items-center" aria-label="Soft Snuggle home">
+                <Logo className="h-9 sm:h-10" />
               </Link>
 
               <div className="flex items-center justify-end gap-7">
@@ -121,7 +122,7 @@ export function Navbar() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
           >
-            {[...LEFT, ...RIGHT].map((l) => (
+            {[...LEFT, ...RIGHT, { href: "/track", label: "Track order" }].map((l) => (
               <Link
                 key={l.href}
                 href={l.href}

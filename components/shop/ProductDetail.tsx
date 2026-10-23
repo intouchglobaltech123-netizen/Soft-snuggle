@@ -10,16 +10,9 @@ import { FlowerMark } from "../art/FlowerMark";
 import { Garment } from "../art/Garment";
 import { QtyStepper } from "../CartDrawer";
 import { useCart } from "../providers/CartProvider";
+import { SizeChart } from "./SizeChart";
 
 const VIEWS = ["Front", "Back", "Close-up"] as const;
-
-const SIZE_GUIDE = [
-  ["0–3M", "50–62 cm", "3–6 kg"],
-  ["3–6M", "62–68 cm", "6–8 kg"],
-  ["6–12M", "68–80 cm", "8–10 kg"],
-  ["12–18M", "80–86 cm", "10–12 kg"],
-  ["18–24M", "86–92 cm", "12–13.5 kg"],
-];
 
 export function ProductDetail({ product }: { product: Product }) {
   const { add } = useCart();
@@ -217,25 +210,7 @@ export function ProductDetail({ product }: { product: Product }) {
                 exit={{ height: 0, opacity: 0 }}
                 className="overflow-hidden"
               >
-                <table className="mt-4 w-full overflow-hidden rounded-2xl bg-paper text-sm">
-                  <thead>
-                    <tr className="bg-sage text-left">
-                      {["Size", "Height", "Weight"].map((h) => (
-                        <th key={h} className="px-4 py-2.5 font-extrabold">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {SIZE_GUIDE.map((row) => (
-                      <tr key={row[0]} className="border-t border-line">
-                        {row.map((c) => (
-                          <td key={c} className="px-4 py-2.5">{c}</td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <p className="mt-2 text-xs text-ink-soft">Between sizes? Size up, so there&apos;s room to grow.</p>
+                <SizeChart highlight={size} />
               </motion.div>
             )}
           </AnimatePresence>
@@ -263,8 +238,8 @@ export function ProductDetail({ product }: { product: Product }) {
           </motion.button>
         </div>
 
-        <ul className="mt-6 grid gap-2 text-sm text-ink-soft sm:grid-cols-3">
-          {["🚚 Free over " + inr(STORE.freeShippingAbove), "💵 Cash on Delivery", "🔁 Easy size exchange"].map((t) => (
+        <ul className="mt-6 grid grid-cols-2 gap-2 text-sm text-ink-soft">
+          {["🕒 Order anytime, 24×7", "🚚 Free over " + inr(STORE.freeShippingAbove), "💵 Cash on Delivery", "🔁 Easy size exchange"].map((t) => (
             <li key={t} className="rounded-2xl bg-paper px-4 py-3 font-semibold">{t}</li>
           ))}
         </ul>

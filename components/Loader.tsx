@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { Category } from "@/lib/types";
 import { Garment } from "./art/Garment";
+import { Logo } from "./art/Logo";
 import { useIntro } from "./providers/IntroProvider";
 
 // Little clothes pegged along a washing line. x/y are positions on the
@@ -118,9 +119,7 @@ export function Loader() {
             exit={{ opacity: 0 }}
             transition={{ delay: 1.1, duration: 0.7 }}
           >
-            <p className="font-display text-5xl tracking-tight text-ink sm:text-6xl">
-              soft <em className="text-sage-deep">snuggle</em>
-            </p>
+            <Logo className="mx-auto h-16 sm:h-20" />
             <p className="eyebrow mt-2">Little clothes, lots of love</p>
           </motion.div>
 

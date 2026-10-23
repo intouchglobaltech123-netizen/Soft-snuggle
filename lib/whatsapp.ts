@@ -2,7 +2,7 @@ import { STORE, inr } from "./store";
 import type { Order } from "./types";
 
 /** The pre-filled message the customer sends to the owner after ordering. */
-export function orderMessage(order: Order, utr?: string | null) {
+export function orderMessage(order: Order, utr?: string | null, trackUrl?: string) {
   const lines: string[] = [];
   lines.push("Hi Soft Snuggle! 👋");
   if (order.paymentMethod === "upi") {
@@ -17,6 +17,7 @@ export function orderMessage(order: Order, utr?: string | null) {
   lines.push(`Shipping: ${order.shipping === 0 ? "Free" : inr(order.shipping)}`);
   lines.push(`*Total: ${inr(order.total)}* (${order.paymentMethod === "upi" ? "Paid via UPI" : "Cash on Delivery"})`);
   lines.push("", "*Deliver to*", `${order.customerName}, +91 ${order.phone}`, order.address, `${order.city}, ${order.state} – ${order.pincode}`);
+  if (trackUrl) lines.push("", `Track: ${trackUrl}`);
   return lines.join("\n");
 }
 

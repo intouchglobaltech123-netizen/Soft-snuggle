@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { getDb } from "./db";
 import { productImages } from "./images";
 import { shippingFor } from "./store";
+import { courierLink, type TrackInfo } from "./tracking";
 import type { Order, OrderItem, PaymentMethod, Product } from "./types";
 
 type ProductRow = {
@@ -120,4 +121,41 @@ export async function submitUtr(code: string, accessKey: string, utr: string) {
 export async function addSubscriber(email: string) {
   const db = await getDb();
   await db.query("INSERT INTO subscribers (email) VALUES ($1) ON CONFLICT (email) DO NOTHING", [email]);
+}
+
+type TrackRow = {
+  code: string; phone: string; status: string; payment_method: "upi" | "cod"; payment_status: string;
+  total: number; items: OrderItem[] | string; city: string; pincode: string; created_at: Date | string;
+  updated_at: Date | string; confirmed_at: Date | string | null; shipped_at: Date | string | null;
+  delivered_at: Date | string | null; courier: string | null; tracking_number: string | null;
+  tracking_url: string | null;
+};
+
+const iso = (d: Date | string | null) => (d ? new Date(d).toISOString() : null);
+
+/** Order status for the public tracking page. The phone number must match the order. */
+export async function trackOrder(code: string, phone: string): Promise<TrackInfo | null> {
+  const db = await getDb();
+  const { rows } = await db.query<TrackRow>("SELECT * FROM orders WHERE code = $1", [code]);
+  const r = rows[0];
+  if (!r || r.phone.slice(-10) !== phone.slice(-10)) return null;
+  const items: OrderItem[] = typeof r.items === "string" ? JSON.parse(r.items) : r.items;
+  return {
+    code: r.code,
+    status: r.status as TrackInfo["status"],
+    paymentMethod: r.payment_method,
+    paymentStatus: r.payment_status,
+    total: r.total,
+    items: items.map((i) => ({ name: i.name, size: i.size, qty: i.qty })),
+    city: r.city,
+    pincode: r.pincode,
+    placedAt: iso(r.created_at)!,
+    confirmedAt: iso(r.confirmed_at),
+    shippedAt: iso(r.shipped_at),
+    deliveredAt: iso(r.delivered_at),
+    updatedAt: iso(r.updated_at)!,
+    courier: r.courier,
+    trackingNumber: r.tracking_number,
+    trackingUrl: courierLink(r.courier, r.tracking_number, r.tracking_url),
+  };
 }

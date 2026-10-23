@@ -11,8 +11,8 @@ const LOOKS = [COLLECTIONS[5].look, COLLECTIONS[3].look, COLLECTIONS[1].look, CO
 const NOTES = [
   "Snug, gentle firsts for the fourth trimester.",
   "Easy snaps for the many, many changes.",
-  "Stretchy fits for rolling, sitting and crawling.",
-  "Room to run, climb and say “mine”.",
+  "Comfy fits for rolling over and sitting up tall.",
+  "Stretchy pieces for crawling, cruising and first steps.",
 ];
 
 /** Vertical scroll drives a horizontal ride through the age groups. */
