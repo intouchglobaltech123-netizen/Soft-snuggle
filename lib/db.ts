@@ -29,6 +29,8 @@ async function connect(): Promise<Db> {
         await pool.query(sql);
       },
     };
+  } else if (process.env.VERCEL) {
+    throw new Error("DATABASE_URL is not set. Add a Postgres database (Vercel → Storage → Neon) and redeploy.");
   } else {
     const { PGlite } = await import("@electric-sql/pglite");
     const dataDir = path.join(process.cwd(), ".data");

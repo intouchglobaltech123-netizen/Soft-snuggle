@@ -23,10 +23,18 @@ CREATE TABLE IF NOT EXISTS products (
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- Allowed categories (re-applied on every start so new ones reach existing databases)
-ALTER TABLE products DROP CONSTRAINT IF EXISTS products_category_check;
-ALTER TABLE products ADD CONSTRAINT products_category_check
-  CHECK (category IN ('frock', 'jabla', 'bodysuit', 'romper', 'gift-set'));
+-- Allowed categories, updated on start so new ones reach existing databases.
+-- Only rewritten when out of date, so parallel server starts don't race each other.
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'products_category_check' AND pg_get_constraintdef(oid) LIKE '%jabla%'
+  ) THEN
+    ALTER TABLE products DROP CONSTRAINT IF EXISTS products_category_check;
+    ALTER TABLE products ADD CONSTRAINT products_category_check
+      CHECK (category IN ('frock', 'jabla', 'bodysuit', 'romper', 'gift-set'));
+  END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS orders (
   id              SERIAL PRIMARY KEY,
