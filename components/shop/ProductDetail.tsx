@@ -18,12 +18,19 @@ export function ProductDetail({ product }: { product: Product }) {
   const { add } = useCart();
   const [view, setView] = useState<(typeof VIEWS)[number]>("Front");
   const [size, setSize] = useState<string | null>(null);
+  const [colour, setColour] = useState(product.colours[0]);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [needSize, setNeedSize] = useState(false);
   const [openPanel, setOpenPanel] = useState<string | null>("details");
   const photos = product.images;
   const [photo, setPhoto] = useState(0);
+
+  const pickColour = (c: (typeof product.colours)[number]) => {
+    setColour(c);
+    const i = c.image ? photos.indexOf(c.image) : -1;
+    if (i >= 0) setPhoto(i);
+  };
 
   const px = useMotionValue(0);
   const py = useMotionValue(0);
@@ -38,7 +45,8 @@ export function ProductDetail({ product }: { product: Product }) {
     }
     add({
       productId: product.id, slug: product.slug, name: product.name, category: product.category,
-      price: product.price, size, qty, tint: product.tint, garment: product.garment, image: photos[0],
+      price: product.price, size, colour: colour?.name, qty, tint: product.tint, garment: product.garment,
+      image: colour?.image ?? photos[0],
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
@@ -60,7 +68,7 @@ export function ProductDetail({ product }: { product: Product }) {
       <div className="lg:sticky lg:top-28 lg:self-start">
         <div style={{ perspective: 1100 }}>
           <motion.div
-            className="relative aspect-square overflow-hidden rounded-[40px]"
+            className={`relative overflow-hidden rounded-[40px] ${photos.length > 0 ? "aspect-[4/5]" : "aspect-square"}`}
             style={{ background: product.tint, rotateX, rotateY }}
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -174,6 +182,38 @@ export function ProductDetail({ product }: { product: Product }) {
           {inr(product.price)}
           {product.compareAt && <s className="ml-3 text-xl text-ink-soft">{inr(product.compareAt)}</s>}
         </p>
+
+        {product.colours.length > 1 && (
+          <div className="mt-8">
+            <p className="text-sm font-extrabold uppercase tracking-[0.18em]">
+              Colour <span className="ml-2 font-bold normal-case tracking-normal text-ink-soft">{colour.name}</span>
+            </p>
+            <div className="mt-3 flex flex-wrap gap-1" role="radiogroup" aria-label="Colour">
+              {product.colours.map((c) => {
+                const on = c.name === colour.name;
+                return (
+                  <button
+                    key={c.name}
+                    type="button"
+                    role="radio"
+                    aria-checked={on}
+                    aria-label={c.name}
+                    title={c.name}
+                    onClick={() => pickColour(c)}
+                    className="grid h-11 w-11 place-items-center rounded-full outline-none transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-ink/40"
+                  >
+                    <span
+                      className={`block h-9 w-9 rounded-full border border-ink/15 transition-shadow ${
+                        on ? "ring-2 ring-ink ring-offset-2 ring-offset-cream" : ""
+                      }`}
+                      style={{ background: c.hex }}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <div className="mt-8">
           <div className="flex items-center justify-between">

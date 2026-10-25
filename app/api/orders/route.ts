@@ -34,7 +34,12 @@ export async function POST(req: Request) {
   const items = rawItems
     .slice(0, 30)
     .map((i) => i as Record<string, unknown>)
-    .map((i) => ({ productId: Number(i.productId), size: str(i.size, 20), qty: Math.floor(Number(i.qty)) }))
+    .map((i) => ({
+      productId: Number(i.productId),
+      size: str(i.size, 20),
+      colour: str(i.colour, 40) || undefined,
+      qty: Math.floor(Number(i.qty)),
+    }))
     .filter((i) => Number.isInteger(i.productId) && i.size && i.qty >= 1 && i.qty <= 10);
   if (items.length === 0) errors.push("Your bag is empty.");
 

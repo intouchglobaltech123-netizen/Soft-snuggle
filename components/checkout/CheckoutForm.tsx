@@ -63,7 +63,7 @@ export function CheckoutForm() {
         body: JSON.stringify({
           ...details,
           paymentMethod: method,
-          items: items.map((i) => ({ productId: i.productId, size: i.size, qty: i.qty })),
+          items: items.map((i) => ({ productId: i.productId, size: i.size, colour: i.colour, qty: i.qty })),
         }),
       });
       const data = await res.json();

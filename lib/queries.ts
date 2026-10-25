@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { getDb } from "./db";
+import { coloursFor } from "./colours";
 import { productImages } from "./images";
 import { shippingFor } from "./store";
 import { courierLink, type TrackInfo } from "./tracking";
@@ -13,12 +14,14 @@ type ProductRow = {
 };
 
 function toProduct(r: ProductRow): Product {
+  const images = productImages(r.slug);
   return {
     id: r.id, slug: r.slug, name: r.name, category: r.category, fabric: r.fabric,
     colour: r.colour, price: r.price, compareAt: r.compare_at, badge: r.badge,
     organic: r.organic, sizes: r.sizes, ageGroups: r.age_groups, description: r.description,
     care: r.care, tint: r.tint, garment: r.garment, inStock: r.in_stock,
-    images: productImages(r.slug),
+    images,
+    colours: coloursFor({ slug: r.slug, colour: r.colour, garment: r.garment }),
   };
 }
 
@@ -43,7 +46,7 @@ export interface NewOrderInput {
   state: string;
   pincode: string;
   paymentMethod: PaymentMethod;
-  items: { productId: number; size: string; qty: number }[];
+  items: { productId: number; size: string; colour?: string; qty: number }[];
 }
 
 export class OrderError extends Error {}
@@ -59,7 +62,10 @@ export async function createOrder(input: NewOrderInput) {
     const p = byId.get(i.productId);
     if (!p || !p.in_stock) throw new OrderError("One of the items in your bag is no longer available.");
     if (!p.sizes.includes(i.size)) throw new OrderError(`Size ${i.size} is not available for ${p.name}.`);
-    return { productId: p.id, name: p.name, size: i.size, qty: i.qty, price: p.price };
+    const options = coloursFor({ slug: p.slug, colour: p.colour, garment: p.garment });
+    const colour = i.colour ? options.find((c) => c.name === i.colour)?.name : undefined;
+    if (i.colour && !colour) throw new OrderError(`Colour ${i.colour} is not available for ${p.name}.`);
+    return { productId: p.id, name: p.name, size: i.size, ...(colour ? { colour } : {}), qty: i.qty, price: p.price };
   });
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
@@ -146,7 +152,7 @@ export async function trackOrder(code: string, phone: string): Promise<TrackInfo
     paymentMethod: r.payment_method,
     paymentStatus: r.payment_status,
     total: r.total,
-    items: items.map((i) => ({ name: i.name, size: i.size, qty: i.qty })),
+    items: items.map((i) => ({ name: i.name, size: i.size, colour: i.colour, qty: i.qty })),
     city: r.city,
     pincode: r.pincode,
     placedAt: iso(r.created_at)!,

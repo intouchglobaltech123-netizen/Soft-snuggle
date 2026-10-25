@@ -17,7 +17,7 @@ export interface TrackInfo {
   paymentMethod: "upi" | "cod";
   paymentStatus: string;
   total: number;
-  items: { name: string; size: string; qty: number }[];
+  items: { name: string; size: string; colour?: string; qty: number }[];
   city: string;
   pincode: string;
   placedAt: string;

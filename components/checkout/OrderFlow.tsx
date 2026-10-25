@@ -249,8 +249,8 @@ export function OrderFlow({ order, upiUrl, upiId, payee, qrSvg }: Props) {
           <p className="eyebrow">Items</p>
           <ul className="mt-3 space-y-2 text-sm">
             {order.items.map((i) => (
-              <li key={`${i.productId}-${i.size}`} className="flex justify-between gap-3">
-                <span>{i.name} · {i.size} × {i.qty}</span>
+              <li key={`${i.productId}-${i.size}-${i.colour ?? ""}`} className="flex justify-between gap-3">
+                <span>{i.name} · {i.colour ? `${i.colour} · ` : ""}{i.size} × {i.qty}</span>
                 <span className="font-bold">{inr(i.price * i.qty)}</span>
               </li>
             ))}

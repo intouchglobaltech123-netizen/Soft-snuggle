@@ -12,7 +12,7 @@ export function orderMessage(order: Order, utr?: string | null, trackUrl?: strin
     lines.push(`I've placed a *Cash on Delivery* order *${order.code}* for *${inr(order.total)}*.`);
   }
   lines.push("", "*Items*");
-  for (const i of order.items) lines.push(`• ${i.name} (${i.size}) × ${i.qty} — ${inr(i.price * i.qty)}`);
+  for (const i of order.items) lines.push(`• ${i.name} (${i.colour ? `${i.colour}, ` : ""}${i.size}) × ${i.qty} — ${inr(i.price * i.qty)}`);
   lines.push("", `Subtotal: ${inr(order.subtotal)}`);
   lines.push(`Shipping: ${order.shipping === 0 ? "Free" : inr(order.shipping)}`);
   lines.push(`*Total: ${inr(order.total)}* (${order.paymentMethod === "upi" ? "Paid via UPI" : "Cash on Delivery"})`);

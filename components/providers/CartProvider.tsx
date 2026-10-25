@@ -14,8 +14,8 @@ interface CartContextValue {
   open: () => void;
   close: () => void;
   add: (item: CartItem) => void;
-  setQty: (productId: number, size: string, qty: number) => void;
-  remove: (productId: number, size: string) => void;
+  setQty: (productId: number, size: string, colour: string | undefined, qty: number) => void;
+  remove: (productId: number, size: string, colour?: string) => void;
   clear: () => void;
 }
 
@@ -43,7 +43,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const add = useCallback((item: CartItem) => {
     setItems((prev) => {
-      const existing = prev.find((i) => i.productId === item.productId && i.size === item.size);
+      const existing = prev.find((i) => i.productId === item.productId && i.size === item.size && i.colour === item.colour);
       if (existing) {
         return prev.map((i) => (i === existing ? { ...i, qty: Math.min(10, i.qty + item.qty) } : i));
       }
@@ -52,16 +52,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setOpen(true);
   }, []);
 
-  const setQty = useCallback((productId: number, size: string, qty: number) => {
+  const same = (i: CartItem, productId: number, size: string, colour?: string) =>
+    i.productId === productId && i.size === size && i.colour === colour;
+
+  const setQty = useCallback((productId: number, size: string, colour: string | undefined, qty: number) => {
     setItems((prev) =>
       qty <= 0
-        ? prev.filter((i) => !(i.productId === productId && i.size === size))
-        : prev.map((i) => (i.productId === productId && i.size === size ? { ...i, qty: Math.min(10, qty) } : i)),
+        ? prev.filter((i) => !same(i, productId, size, colour))
+        : prev.map((i) => (same(i, productId, size, colour) ? { ...i, qty: Math.min(10, qty) } : i)),
     );
   }, []);
 
-  const remove = useCallback((productId: number, size: string) => {
-    setItems((prev) => prev.filter((i) => !(i.productId === productId && i.size === size)));
+  const remove = useCallback((productId: number, size: string, colour?: string) => {
+    setItems((prev) => prev.filter((i) => !same(i, productId, size, colour)));
   }, []);
 
   const value = useMemo<CartContextValue>(

@@ -17,7 +17,7 @@ export function ProductCard({ product }: { product: Product }) {
   const addSize = (size: string) => {
     add({
       productId: product.id, slug: product.slug, name: product.name, category: product.category,
-      price: product.price, size, qty: 1, tint: product.tint, garment: product.garment, image: front,
+      price: product.price, size, colour: product.colours[0]?.name, qty: 1, tint: product.tint, garment: product.garment, image: front,
     });
     setPicking(false);
   };

@@ -190,8 +190,8 @@ export function TrackOrder({ initialCode }: { initialCode?: string }) {
                 <p className="eyebrow">Items</p>
                 <ul className="mt-3 space-y-1.5">
                   {order.items.map((i) => (
-                    <li key={`${i.name}-${i.size}`}>
-                      {i.name} · {i.size} × {i.qty}
+                    <li key={`${i.name}-${i.size}-${i.colour ?? ""}`}>
+                      {i.name} · {i.colour ? `${i.colour} · ` : ""}{i.size} × {i.qty}
                     </li>
                   ))}
                 </ul>

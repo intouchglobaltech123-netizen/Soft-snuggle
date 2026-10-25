@@ -1,5 +1,12 @@
 export type Category = "frock" | "jabla" | "bodysuit" | "romper" | "gift-set";
 
+export interface ColourOption {
+  name: string;
+  hex: string;
+  /** Optional photo for this colour (path under /public). Falls back to the product photos. */
+  image?: string;
+}
+
 export interface Product {
   id: number;
   slug: string;
@@ -20,6 +27,8 @@ export interface Product {
   /** Colour the garment illustration is drawn in */
   garment: string;
   inStock: boolean;
+  /** Colour choices shown as round swatches on the product page */
+  colours: ColourOption[];
   /** Real photos from public/products/<slug>; empty means use the illustration */
   images: string[];
 }
@@ -31,6 +40,7 @@ export interface CartItem {
   category: Category;
   price: number;
   size: string;
+  colour?: string;
   qty: number;
   tint: string;
   garment: string;
@@ -41,6 +51,7 @@ export interface OrderItem {
   productId: number;
   name: string;
   size: string;
+  colour?: string;
   qty: number;
   price: number;
 }

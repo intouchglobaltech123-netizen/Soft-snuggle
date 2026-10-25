@@ -81,7 +81,7 @@ export function CartDrawer() {
                   <AnimatePresence initial={false}>
                     {items.map((item) => (
                       <motion.li
-                        key={`${item.productId}-${item.size}`}
+                        key={`${item.productId}-${item.size}-${item.colour ?? ""}`}
                         layout
                         initial={{ opacity: 0, x: 30 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -100,15 +100,15 @@ export function CartDrawer() {
                           <div className="flex items-start justify-between gap-2">
                             <p className="font-display text-lg leading-tight">{item.name}</p>
                             <button
-                              onClick={() => remove(item.productId, item.size)}
+                              onClick={() => remove(item.productId, item.size, item.colour)}
                               className="text-xs font-bold text-ink-soft underline-offset-2 hover:underline"
                             >
                               Remove
                             </button>
                           </div>
-                          <p className="text-sm text-ink-soft">Size {item.size}</p>
+                          <p className="text-sm text-ink-soft">{item.colour ? `${item.colour} · ` : ""}Size {item.size}</p>
                           <div className="mt-auto flex items-center justify-between">
-                            <QtyStepper value={item.qty} onChange={(q) => setQty(item.productId, item.size, q)} />
+                            <QtyStepper value={item.qty} onChange={(q) => setQty(item.productId, item.size, item.colour, q)} />
                             <span className="font-bold">{inr(item.price * item.qty)}</span>
                           </div>
                         </div>
