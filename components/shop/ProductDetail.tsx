@@ -279,7 +279,7 @@ export function ProductDetail({ product }: { product: Product }) {
         </div>
 
         <ul className="mt-6 grid grid-cols-2 gap-2 text-sm text-ink-soft">
-          {["🕒 Order anytime, 24×7", "🚚 Free over " + inr(STORE.freeShippingAbove), "💵 Cash on Delivery", "🔁 Easy size exchange"].map((t) => (
+          {["🕒 24×7 ordering", "🚚 Free over " + inr(STORE.freeShippingAbove), "💵 Cash on Delivery", "🔁 Easy size exchange"].map((t) => (
             <li key={t} className="rounded-2xl bg-paper px-4 py-3 font-semibold">{t}</li>
           ))}
         </ul>

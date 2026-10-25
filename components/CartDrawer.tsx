@@ -127,7 +127,7 @@ export function CartDrawer() {
                   <Link href="/checkout" onClick={close} className="btn-primary mt-3 w-full">
                     Checkout →
                   </Link>
-                  <p className="text-center text-xs text-ink-soft">Order 24×7 · UPI or Cash on Delivery · Confirmed on WhatsApp</p>
+                  <p className="text-center text-xs text-ink-soft">24×7 ordering · UPI or Cash on Delivery · Confirmed on WhatsApp</p>
                 </div>
               </>
             )}

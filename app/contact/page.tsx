@@ -10,7 +10,7 @@ export default function ContactPage() {
   const cards = [
     {
       title: "WhatsApp",
-      body: "Order 24×7, or ask about sizes and delivery.",
+      body: "Order any hour, or ask us about sizes and delivery.",
       cta: "Chat with us",
       href: `https://wa.me/${STORE.whatsappNumber}?text=${encodeURIComponent("Hi Soft Snuggle! ")}`,
       tint: "#DFE7DD",

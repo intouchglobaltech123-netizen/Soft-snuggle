@@ -20,7 +20,7 @@ export function Footer() {
       <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center gap-5 px-6 pt-10 text-center">
         <Logo className="h-12" />
         <p className="inline-flex items-center gap-2 rounded-full bg-sage px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-ink">
-          <span className="h-2 w-2 animate-pulse rounded-full bg-[#25D366]" /> Place orders anytime · 24×7
+          <span className="h-2 w-2 animate-pulse rounded-full bg-[#25D366]" /> 24×7 ordering available
         </p>
         <nav className="flex flex-wrap justify-center gap-x-7 gap-y-2">
           {LINKS.map((l) => (

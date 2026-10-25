@@ -50,8 +50,8 @@ export function Navbar() {
       <header className="fixed inset-x-0 top-0 z-50">
         {/* Offer strip */}
         <div className="relative bg-sage-deep px-4 py-1.5 text-center text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper sm:text-[11px]">
-          Place orders 24×7 · Free shipping over {inr(STORE.freeShippingAbove)}
-          <span className="hidden lg:inline"> · Cash on Delivery available</span>
+          24×7 ordering available · Free shipping over {inr(STORE.freeShippingAbove)}
+          <span className="hidden lg:inline"> · Cash on Delivery</span>
           <Link
             href="/track"
             className="absolute right-6 top-1/2 hidden -translate-y-1/2 underline decoration-paper/50 underline-offset-2 hover:decoration-paper md:block"
