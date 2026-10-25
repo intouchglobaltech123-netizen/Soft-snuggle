@@ -42,7 +42,7 @@ export default function ContactPage() {
           <h1 className="mt-5 font-display text-5xl tracking-tight sm:text-6xl">
             Say <em className="text-sage-deep">hello</em>
           </h1>
-          <p className="mx-auto mt-3 max-w-md text-ink-soft">We never close, so you can order at any hour, 2am feeds included. Every message reaches a real person, and we answer all of them.</p>
+          <p className="mx-auto mt-3 max-w-md text-ink-soft">We&apos;re open 24×7, so order whenever it suits you, day or night. Ask us anything and a real person will always write back.</p>
         </Reveal>
         <div className="mt-12 grid gap-4 md:grid-cols-3">
           {cards.map((c, i) => (
