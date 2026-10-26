@@ -91,7 +91,7 @@ export function ProductDetail({ product }: { product: Product }) {
                   key={photos[photo]}
                   src={photos[photo]}
                   alt={product.name}
-                  className={`absolute inset-[6%] h-[88%] w-[88%] object-contain ${isStudioShot(photos[photo]) ? "mix-blend-multiply" : ""}`}
+                  className={`absolute inset-[13%] h-[74%] w-[74%] object-contain ${isStudioShot(photos[photo]) ? "mix-blend-multiply" : ""}`}
                   initial={{ opacity: 0, scale: 1.06 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
