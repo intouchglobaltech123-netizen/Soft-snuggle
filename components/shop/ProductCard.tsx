@@ -33,7 +33,7 @@ export function ProductCard({ product }: { product: Product }) {
                 src={front}
                 alt={product.name}
                 loading="lazy"
-                className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-105 ${
+                className={`absolute inset-[6%] h-[88%] w-[88%] object-contain transition-all duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-105 ${
                   isStudioShot(front) ? "mix-blend-multiply" : ""
                 } ${back ? "group-hover:opacity-0" : ""}`}
               />
@@ -42,7 +42,7 @@ export function ProductCard({ product }: { product: Product }) {
                   src={back}
                   alt=""
                   loading="lazy"
-                  className={`absolute inset-0 h-full w-full scale-105 object-cover opacity-0 transition-all duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-100 group-hover:opacity-100 ${
+                  className={`absolute inset-[6%] h-[88%] w-[88%] scale-105 object-contain opacity-0 transition-all duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-100 group-hover:opacity-100 ${
                     isStudioShot(back) ? "mix-blend-multiply" : ""
                   }`}
                 />

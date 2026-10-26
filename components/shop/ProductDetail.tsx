@@ -91,7 +91,7 @@ export function ProductDetail({ product }: { product: Product }) {
                   key={photos[photo]}
                   src={photos[photo]}
                   alt={product.name}
-                  className={`absolute inset-0 h-full w-full object-cover ${isStudioShot(photos[photo]) ? "mix-blend-multiply" : ""}`}
+                  className={`absolute inset-[6%] h-[88%] w-[88%] object-contain ${isStudioShot(photos[photo]) ? "mix-blend-multiply" : ""}`}
                   initial={{ opacity: 0, scale: 1.06 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
@@ -142,7 +142,7 @@ export function ProductDetail({ product }: { product: Product }) {
                 style={{ background: product.tint }}
                 aria-label={`Photo ${i + 1}`}
               >
-                <img src={src} alt="" className={`h-full w-full object-cover ${isStudioShot(src) ? "mix-blend-multiply" : ""}`} />
+                <img src={src} alt="" className={`h-full w-full object-contain p-1 ${isStudioShot(src) ? "mix-blend-multiply" : ""}`} />
               </button>
             ))}
           </div>

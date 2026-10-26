@@ -16,7 +16,7 @@ export function ProductThumb({ image, category, garment, className }: Props) {
     <img
       src={image}
       alt=""
-      className={`h-full w-full object-cover ${isStudioShot(image) ? "mix-blend-multiply" : ""}`}
+      className={`h-full w-full object-contain p-1 ${isStudioShot(image) ? "mix-blend-multiply" : ""}`}
       draggable={false}
     />
   );
