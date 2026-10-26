@@ -33,7 +33,7 @@ const OVERRIDES: Record<string, ColourOption[]> = {
 // it contains, and offering a single colour for a box of several would be a
 // promise the pack cannot keep, so those get no swatches at all. Anything else
 // opts in through OVERRIDES.
-const COLOURED_CATEGORIES: Product["category"][] = ["frock"];
+const COLOURED_CATEGORIES: Product["category"][] = ["frock", "jabla"];
 
 export function coloursFor(p: Pick<Product, "slug" | "colour" | "garment" | "category">): ColourOption[] {
   if (OVERRIDES[p.slug]) return OVERRIDES[p.slug];
