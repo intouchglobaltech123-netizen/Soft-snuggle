@@ -87,9 +87,12 @@ export function ProductDetail({ product }: { product: Product }) {
   ];
 
   return (
-    <section className="mx-auto grid max-w-7xl gap-10 px-6 pb-24 pt-28 sm:pt-32 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+    <section className="mx-auto grid max-w-6xl gap-10 px-6 pb-24 pt-28 sm:pt-32 lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-14">
       {/* Visual */}
-      <div className="lg:sticky lg:top-28 lg:self-start">
+      {/* Capped so the photo stays a product shot rather than growing to fill
+          whatever width the screen offers. Full width on a phone, where the
+          cap is wider than the screen anyway. */}
+      <div className="mx-auto w-full max-w-[440px] lg:sticky lg:top-28 lg:self-start">
         <div style={{ perspective: 1100 }}>
           <motion.div
             className={`relative overflow-hidden rounded-[40px] ${photos.length > 0 ? "" : "aspect-square"}`}
