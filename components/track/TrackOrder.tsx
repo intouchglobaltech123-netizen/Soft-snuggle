@@ -1,15 +1,17 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { STORE, inr } from "@/lib/store";
 import { TRACK_STEPS, type TrackInfo } from "@/lib/tracking";
 import { WhatsAppIcon } from "../WhatsAppFab";
+import { useAccount } from "../providers/AccountProvider";
 
 const fmt = (d: string | null) =>
   d ? new Date(d).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : null;
 
 export function TrackOrder({ initialCode }: { initialCode?: string }) {
+  const { customer, ready: accountReady } = useAccount();
   const [code, setCode] = useState(initialCode ?? "");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,18 +27,25 @@ export function TrackOrder({ initialCode }: { initialCode?: string }) {
     } catch {}
   }, []);
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Signed in, the number is already known.
+  useEffect(() => {
+    if (customer?.phone) setPhone((p) => p || customer.phone);
+  }, [customer]);
+
+  const look = useCallback(async (orderCode: string, orderPhone: string) => {
     setLoading(true);
     setError(null);
     try {
       const res = await fetch("/api/track", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, phone }),
+        body: JSON.stringify({ code: orderCode, phone: orderPhone }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      // A crashed server sends no body; reading it as JSON would throw a parse
+      // error that tells the person nothing about their parcel.
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : {};
+      if (!res.ok) throw new Error(data.error || "We couldn't look that up just now. Please try again.");
       setOrder(data);
     } catch (err) {
       setOrder(null);
@@ -44,7 +53,21 @@ export function TrackOrder({ initialCode }: { initialCode?: string }) {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    look(code, phone);
   };
+
+  // Arriving from your own order list, there is nothing to fill in: show it.
+  const [autoDone, setAutoDone] = useState(false);
+  useEffect(() => {
+    if (autoDone || !initialCode || !accountReady) return;
+    if (!customer && !phone) return;
+    setAutoDone(true);
+    look(initialCode, customer?.phone ?? phone);
+  }, [autoDone, initialCode, accountReady, customer, phone, look]);
 
   const stepIndex = order ? TRACK_STEPS.findIndex((s) => s.key === order.status) : -1;
   const stepDate: Record<string, string | null> = order
@@ -72,7 +95,7 @@ export function TrackOrder({ initialCode }: { initialCode?: string }) {
           <span className="mb-1.5 block text-sm font-bold text-ink-soft">Mobile number</span>
           <input
             className="field"
-            required
+            required={!customer}
             inputMode="numeric"
             maxLength={10}
             value={phone}

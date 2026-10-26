@@ -147,6 +147,23 @@ export async function trackOrder(code: string, phone: string): Promise<TrackInfo
   const { rows } = await db.query<TrackRow>("SELECT * FROM orders WHERE code = $1", [code]);
   const r = rows[0];
   if (!r || r.phone.slice(-10) !== phone.slice(-10)) return null;
+  return toTrackInfo(r);
+}
+
+/**
+ * The same status for someone signed in, without asking for the phone number
+ * they already proved when they logged in. Only their own orders match.
+ */
+export async function trackOwnOrder(code: string, customerId: number): Promise<TrackInfo | null> {
+  const db = await getDb();
+  const { rows } = await db.query<TrackRow>(
+    "SELECT * FROM orders WHERE code = $1 AND customer_id = $2",
+    [code, customerId],
+  );
+  return rows[0] ? toTrackInfo(rows[0]) : null;
+}
+
+function toTrackInfo(r: TrackRow): TrackInfo {
   const items: OrderItem[] = typeof r.items === "string" ? JSON.parse(r.items) : r.items;
   return {
     code: r.code,
