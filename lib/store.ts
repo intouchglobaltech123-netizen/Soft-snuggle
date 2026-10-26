@@ -2,7 +2,7 @@
 
 export const STORE = {
   name: "Soft Snuggle",
-  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919999999999",
+  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919585692553",
   shippingFlat: Number(process.env.NEXT_PUBLIC_SHIPPING_FLAT ?? 79),
   freeShippingAbove: Number(process.env.NEXT_PUBLIC_FREE_SHIPPING_ABOVE ?? 1499),
   instagram: "https://instagram.com/",
