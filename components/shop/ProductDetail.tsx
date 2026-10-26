@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AnimatePresence, LayoutGroup, motion, useMotionValue, useSpring, useTransform } from "motion/react";
+import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { defaultColour } from "@/lib/colours";
 import { isStudioShot } from "@/lib/photo";
@@ -39,7 +39,7 @@ export function ProductDetail({ product }: { product: Product }) {
     const probe = new Image();
     const measure = () => {
       if (live && probe.naturalWidth && probe.naturalHeight) {
-        setFrameRatio(Math.min(1.6, Math.max(0.7, probe.naturalWidth / probe.naturalHeight)));
+        setFrameRatio(Math.min(2, Math.max(0.6, probe.naturalWidth / probe.naturalHeight)));
       }
     };
     probe.onload = measure;
@@ -55,11 +55,6 @@ export function ProductDetail({ product }: { product: Product }) {
     const i = c.image ? photos.indexOf(c.image) : -1;
     if (i >= 0) setPhoto(i);
   };
-
-  const px = useMotionValue(0);
-  const py = useMotionValue(0);
-  const rotateY = useSpring(useTransform(px, [-0.5, 0.5], [-14, 14]), { stiffness: 120, damping: 14 });
-  const rotateX = useSpring(useTransform(py, [-0.5, 0.5], [10, -10]), { stiffness: 120, damping: 14 });
 
   const addToBag = () => {
     if (!size) {
@@ -93,27 +88,16 @@ export function ProductDetail({ product }: { product: Product }) {
           whatever width the screen offers. Full width on a phone, where the
           cap is wider than the screen anyway. */}
       <div className="mx-auto w-full max-w-[440px] lg:sticky lg:top-28 lg:self-start">
-        <div style={{ perspective: 1100 }}>
+        <div>
           <motion.div
-            className={`relative overflow-hidden rounded-[40px] ${photos.length > 0 ? "" : "aspect-square"}`}
+            className={`relative overflow-hidden rounded-[32px] ${photos.length > 0 ? "" : "aspect-square"}`}
             style={{
               background: product.tint,
-              rotateX,
-              rotateY,
               ...(photos.length > 0 ? { aspectRatio: frameRatio } : {}),
             }}
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            onPointerMove={(e) => {
-              const r = e.currentTarget.getBoundingClientRect();
-              px.set((e.clientX - r.left) / r.width - 0.5);
-              py.set((e.clientY - r.top) / r.height - 0.5);
-            }}
-            onPointerLeave={() => {
-              px.set(0);
-              py.set(0);
-            }}
           >
             {photos.length > 0 ? (
               <AnimatePresence mode="popLayout" initial={false}>
@@ -121,7 +105,7 @@ export function ProductDetail({ product }: { product: Product }) {
                   key={photos[photo]}
                   src={photos[photo]}
                   alt={product.name}
-                  className={`absolute inset-[7%] h-[86%] w-[86%] object-contain ${isStudioShot(photos[photo]) ? "mix-blend-multiply" : ""}`}
+                  className={`absolute inset-0 h-full w-full object-cover ${isStudioShot(photos[photo]) ? "mix-blend-multiply" : ""}`}
                   initial={{ opacity: 0, scale: 1.06 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
@@ -172,7 +156,7 @@ export function ProductDetail({ product }: { product: Product }) {
                 style={{ background: product.tint }}
                 aria-label={`Photo ${i + 1}`}
               >
-                <img src={src} alt="" className={`h-full w-full object-contain p-1 ${isStudioShot(src) ? "mix-blend-multiply" : ""}`} />
+                <img src={src} alt="" className={`h-full w-full object-cover ${isStudioShot(src) ? "mix-blend-multiply" : ""}`} />
               </button>
             ))}
           </div>
