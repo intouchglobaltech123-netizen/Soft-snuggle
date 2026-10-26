@@ -8,6 +8,7 @@ import { inr } from "@/lib/store";
 import type { Product } from "@/lib/types";
 import { Garment } from "../art/Garment";
 import { useCart } from "../providers/CartProvider";
+import { SaveButton } from "./SaveButton";
 
 export function ProductCard({ product }: { product: Product }) {
   const { add } = useCart();
@@ -62,6 +63,11 @@ export function ProductCard({ product }: { product: Product }) {
             {product.badge}
           </span>
         )}
+
+        <SaveButton
+          productId={product.id}
+          className="absolute right-3 top-3 h-9 w-9 bg-paper/90 text-ink shadow-sm backdrop-blur hover:bg-paper"
+        />
 
         <div
           className={`absolute inset-x-3 bottom-3 transition-all duration-300 ${

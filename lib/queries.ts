@@ -38,6 +38,7 @@ export async function getProduct(slug: string): Promise<Product | null> {
 }
 
 export interface NewOrderInput {
+  customerId?: number | null;
   customerName: string;
   phone: string;
   email: string | null;
@@ -76,13 +77,14 @@ export async function createOrder(input: NewOrderInput) {
   const res = await db.query<{ code: string }>(
     `INSERT INTO orders
       (access_key, customer_name, phone, email, address, city, state, pincode,
-       items, subtotal, shipping, total, payment_method, payment_status)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+       items, subtotal, shipping, total, payment_method, payment_status, customer_id)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
      RETURNING code`,
     [
       accessKey, input.customerName, input.phone, input.email, input.address, input.city,
       input.state, input.pincode, JSON.stringify(items), subtotal, shipping, total,
       input.paymentMethod, input.paymentMethod === "cod" ? "cod" : "pending",
+      input.customerId ?? null,
     ],
   );
   return { code: res.rows[0].code, accessKey, total };
@@ -164,4 +166,145 @@ export async function trackOrder(code: string, phone: string): Promise<TrackInfo
     trackingNumber: r.tracking_number,
     trackingUrl: courierLink(r.courier, r.tracking_number, r.tracking_url),
   };
+}
+
+// ── Accounts ───────────────────────────────────────────────────────────────
+
+export interface Customer {
+  id: number;
+  phone: string;
+  name: string;
+  email: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  pincode: string | null;
+}
+
+type CustomerRow = Customer & { password_hash: string };
+
+const toCustomer = (r: CustomerRow): Customer => ({
+  id: r.id, phone: r.phone, name: r.name, email: r.email,
+  address: r.address, city: r.city, state: r.state, pincode: r.pincode,
+});
+
+export class AuthError extends Error {}
+
+/** Creates the account and claims any guest orders already placed from that number. */
+export async function createCustomer(input: {
+  phone: string; name: string; email: string | null; passwordHash: string;
+}): Promise<Customer> {
+  const db = await getDb();
+  const existing = await db.query("SELECT id FROM customers WHERE phone = $1", [input.phone]);
+  if (existing.rows.length) throw new AuthError("An account already uses this number. Try logging in.");
+
+  const { rows } = await db.query<CustomerRow>(
+    `INSERT INTO customers (phone, name, email, password_hash, last_login_at)
+     VALUES ($1, $2, $3, $4, now()) RETURNING *`,
+    [input.phone, input.name, input.email, input.passwordHash],
+  );
+  const customer = rows[0];
+  await db.query("UPDATE orders SET customer_id = $1 WHERE customer_id IS NULL AND phone = $2", [customer.id, input.phone]);
+  return toCustomer(customer);
+}
+
+export async function findCustomerByPhone(phone: string) {
+  const db = await getDb();
+  const { rows } = await db.query<CustomerRow>("SELECT * FROM customers WHERE phone = $1", [phone]);
+  return rows[0] ?? null;
+}
+
+export async function getCustomer(id: number): Promise<Customer | null> {
+  const db = await getDb();
+  const { rows } = await db.query<CustomerRow>("SELECT * FROM customers WHERE id = $1", [id]);
+  return rows[0] ? toCustomer(rows[0]) : null;
+}
+
+export async function noteLogin(id: number) {
+  const db = await getDb();
+  await db.query("UPDATE customers SET last_login_at = now() WHERE id = $1", [id]);
+  await db.query(
+    "UPDATE orders SET customer_id = $1 WHERE customer_id IS NULL AND phone = (SELECT phone FROM customers WHERE id = $1)",
+    [id],
+  );
+}
+
+/** Remembers the address from the latest order so the next checkout is one tap. */
+export async function saveCustomerAddress(id: number, a: {
+  name: string; email: string | null; address: string; city: string; state: string; pincode: string;
+}) {
+  const db = await getDb();
+  await db.query(
+    `UPDATE customers SET name = $2, email = COALESCE($3, email), address = $4,
+       city = $5, state = $6, pincode = $7 WHERE id = $1`,
+    [id, a.name, a.email, a.address, a.city, a.state, a.pincode],
+  );
+}
+
+// ── Wishlist ───────────────────────────────────────────────────────────────
+
+export async function getWishlist(customerId: number): Promise<number[]> {
+  const db = await getDb();
+  const { rows } = await db.query<{ product_id: number }>(
+    "SELECT product_id FROM wishlist WHERE customer_id = $1 ORDER BY created_at DESC",
+    [customerId],
+  );
+  return rows.map((r) => r.product_id);
+}
+
+export async function getWishlistProducts(customerId: number): Promise<Product[]> {
+  const db = await getDb();
+  const { rows } = await db.query<ProductRow>(
+    `SELECT p.* FROM products p
+     JOIN wishlist w ON w.product_id = p.id
+     WHERE w.customer_id = $1 ORDER BY w.created_at DESC`,
+    [customerId],
+  );
+  return rows.map(toProduct);
+}
+
+export async function addToWishlist(customerId: number, productId: number) {
+  const db = await getDb();
+  await db.query(
+    "INSERT INTO wishlist (customer_id, product_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+    [customerId, productId],
+  );
+}
+
+export async function removeFromWishlist(customerId: number, productId: number) {
+  const db = await getDb();
+  await db.query("DELETE FROM wishlist WHERE customer_id = $1 AND product_id = $2", [customerId, productId]);
+}
+
+// ── Order history ──────────────────────────────────────────────────────────
+
+export interface OrderSummary {
+  code: string;
+  status: string;
+  paymentMethod: PaymentMethod;
+  paymentStatus: string;
+  total: number;
+  items: OrderItem[];
+  placedAt: string;
+}
+
+export async function getCustomerOrders(customerId: number): Promise<OrderSummary[]> {
+  const db = await getDb();
+  const { rows } = await db.query<{
+    code: string; status: string; payment_method: PaymentMethod; payment_status: string;
+    total: number; items: OrderItem[] | string; created_at: Date | string;
+  }>(
+    `SELECT code, status, payment_method, payment_status, total, items, created_at
+     FROM orders WHERE customer_id = $1 ORDER BY id DESC LIMIT 50`,
+    [customerId],
+  );
+  return rows.map((r) => ({
+    code: r.code,
+    status: r.status,
+    paymentMethod: r.payment_method,
+    paymentStatus: r.payment_status,
+    total: r.total,
+    items: typeof r.items === "string" ? JSON.parse(r.items) : r.items,
+    placedAt: new Date(r.created_at).toISOString(),
+  }));
 }

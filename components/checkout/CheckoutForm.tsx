@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { inr, shippingFor } from "@/lib/store";
 import type { PaymentMethod } from "@/lib/types";
 import { ProductThumb } from "../shop/ProductThumb";
+import { useAccount } from "../providers/AccountProvider";
 import { useCart } from "../providers/CartProvider";
 
 const STATES = [
@@ -35,6 +36,7 @@ const EMPTY: Details = { customerName: "", phone: "", email: "", address: "", ci
 export function CheckoutForm() {
   const router = useRouter();
   const { items, subtotal, hydrated, clear } = useCart();
+  const { customer, ready: accountReady } = useAccount();
   const [details, setDetails] = useState<Details>(EMPTY);
   const [method, setMethod] = useState<PaymentMethod>("upi");
   const [submitting, setSubmitting] = useState(false);
@@ -48,6 +50,21 @@ export function CheckoutForm() {
       if (saved) setDetails({ ...EMPTY, ...JSON.parse(saved) });
     } catch {}
   }, []);
+
+  // An account fills in what we already know, without wiping anything typed.
+  useEffect(() => {
+    if (!customer) return;
+    setDetails((d) => ({
+      ...d,
+      customerName: d.customerName || customer.name,
+      phone: d.phone || customer.phone,
+      email: d.email || customer.email || "",
+      address: d.address || customer.address || "",
+      city: d.city || customer.city || "",
+      state: customer.state || d.state,
+      pincode: d.pincode || customer.pincode || "",
+    }));
+  }, [customer]);
 
   const set = (k: keyof Details) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setDetails((d) => ({ ...d, [k]: e.target.value }));
@@ -98,6 +115,23 @@ export function CheckoutForm() {
         <h1 className="mt-3 font-display text-5xl tracking-tight sm:text-6xl">
           Check<em className="text-sage-deep">out</em>
         </h1>
+
+        {accountReady && !customer && (
+          <div className="mt-7 flex flex-wrap items-center justify-between gap-3 rounded-[24px] border border-line bg-paper/70 px-5 py-4">
+            <p className="text-sm text-ink-soft">
+              Have an account? Log in and we&apos;ll fill this in for you.
+            </p>
+            <Link href="/login?next=/checkout" className="text-sm font-bold underline underline-offset-4">
+              Log in →
+            </Link>
+          </div>
+        )}
+
+        {customer && (
+          <p className="mt-7 rounded-[24px] bg-sage/60 px-5 py-4 text-sm font-semibold">
+            Signed in as {customer.name}. This order will be saved to your account.
+          </p>
+        )}
 
         <Fieldset step="1" title="Who's it for?">
           <div className="grid gap-4 sm:grid-cols-2">

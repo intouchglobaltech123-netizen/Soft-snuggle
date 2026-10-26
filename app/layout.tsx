@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { Loader } from "@/components/Loader";
 import { Navbar } from "@/components/Navbar";
 import { WhatsAppFab } from "@/components/WhatsAppFab";
+import { AccountProvider } from "@/components/providers/AccountProvider";
 import { CartProvider } from "@/components/providers/CartProvider";
 import { IntroProvider } from "@/components/providers/IntroProvider";
 import { SmoothScroll } from "@/components/providers/SmoothScroll";
@@ -32,14 +33,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <SmoothScroll>
           <IntroProvider>
-            <CartProvider>
+            <AccountProvider>
+              <CartProvider>
               <Loader />
               <Navbar />
               <main>{children}</main>
               <Footer />
               <CartDrawer />
               <WhatsAppFab />
-            </CartProvider>
+              </CartProvider>
+            </AccountProvider>
           </IntroProvider>
         </SmoothScroll>
       </body>

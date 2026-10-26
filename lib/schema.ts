@@ -69,6 +69,36 @@ ALTER TABLE orders ADD COLUMN IF NOT EXISTS confirmed_at    TIMESTAMPTZ;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipped_at      TIMESTAMPTZ;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivered_at    TIMESTAMPTZ;
 
+-- Shoppers with an account. Guests order without one, so this is optional:
+-- orders keep their own name, phone and address whatever happens here.
+CREATE TABLE IF NOT EXISTS customers (
+  id            SERIAL PRIMARY KEY,
+  phone         TEXT UNIQUE NOT NULL,
+  name          TEXT NOT NULL,
+  email         TEXT,
+  password_hash TEXT NOT NULL,
+  address       TEXT,
+  city          TEXT,
+  state         TEXT,
+  pincode       TEXT,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  last_login_at TIMESTAMPTZ
+);
+
+-- Saved pieces. One row per customer and product, so saving twice is harmless.
+CREATE TABLE IF NOT EXISTS wishlist (
+  customer_id  INTEGER NOT NULL REFERENCES customers (id) ON DELETE CASCADE,
+  product_id   INTEGER NOT NULL REFERENCES products (id) ON DELETE CASCADE,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (customer_id, product_id)
+);
+
+-- Orders remember who placed them when the shopper was signed in. Guest orders
+-- leave this empty and are claimed later by matching phone number.
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_id INTEGER REFERENCES customers (id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS orders_customer_idx ON orders (customer_id);
+CREATE INDEX IF NOT EXISTS orders_phone_idx ON orders (phone);
+
 CREATE TABLE IF NOT EXISTS subscribers (
   id          SERIAL PRIMARY KEY,
   email       TEXT UNIQUE NOT NULL,

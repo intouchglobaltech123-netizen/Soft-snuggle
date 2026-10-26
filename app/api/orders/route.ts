@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { OrderError, createOrder } from "@/lib/queries";
+import { OrderError, createOrder, saveCustomerAddress } from "@/lib/queries";
+import { currentCustomer } from "@/lib/session";
 
 const str = (v: unknown, max = 200) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 
@@ -46,10 +47,16 @@ export async function POST(req: Request) {
   if (errors.length) return NextResponse.json({ error: errors[0], errors }, { status: 422 });
 
   try {
+    // Guests order without an account; when someone is signed in the order is
+    // filed under them and their address is kept for next time.
+    const customer = await currentCustomer();
     const order = await createOrder({
       customerName, phone, email, address, city, state, pincode,
-      paymentMethod: paymentMethod!, items,
+      paymentMethod: paymentMethod!, items, customerId: customer?.id ?? null,
     });
+    if (customer) {
+      await saveCustomerAddress(customer.id, { name: customerName, email, address, city, state, pincode });
+    }
     return NextResponse.json(order, { status: 201 });
   } catch (err) {
     if (err instanceof OrderError) return NextResponse.json({ error: err.message }, { status: 409 });

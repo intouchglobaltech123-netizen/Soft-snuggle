@@ -6,6 +6,7 @@ import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { STORE, inr } from "@/lib/store";
 import { Logo } from "./art/Logo";
+import { useAccount } from "./providers/AccountProvider";
 import { useCart } from "./providers/CartProvider";
 
 const LEFT = [
@@ -19,6 +20,7 @@ const RIGHT = [
 
 export function Navbar() {
   const { count, open } = useCart();
+  const { customer, wishlist } = useAccount();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -89,6 +91,34 @@ export function Navbar() {
                 <div className="hidden items-center gap-7 md:flex">
                   {RIGHT.map(navLink)}
                 </div>
+                <Link
+                  href="/wishlist"
+                  className="relative hidden h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-sage/70 sm:grid"
+                  aria-label={`Saved pieces, ${wishlist.length} saved`}
+                >
+                  <HeartIcon className="h-[18px] w-[18px]" />
+                  {wishlist.length > 0 && (
+                    <span className="absolute right-0.5 top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-rose px-1 text-[10px] font-bold text-paper">
+                      {wishlist.length}
+                    </span>
+                  )}
+                </Link>
+
+                <Link
+                  href={customer ? "/account" : "/login"}
+                  className="grid h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-sage/70"
+                  aria-label={customer ? `Your account, ${customer.name}` : "Log in"}
+                  title={customer ? customer.name : "Log in"}
+                >
+                  {customer ? (
+                    <span className="grid h-7 w-7 place-items-center rounded-full bg-sage-deep text-[11px] font-extrabold uppercase text-paper">
+                      {customer.name.trim().charAt(0)}
+                    </span>
+                  ) : (
+                    <UserIcon className="h-[18px] w-[18px]" />
+                  )}
+                </Link>
+
                 <button
                   onClick={open}
                   className="flex items-center gap-1.5 rounded-full py-1.5 pl-2.5 pr-1.5 text-ink transition-colors hover:bg-sage/70"
@@ -146,6 +176,23 @@ export function BagIcon({ className = "h-4 w-4" }: { className?: string }) {
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z" />
       <path d="M9 10V7a3 3 0 0 1 6 0v3" />
+    </svg>
+  );
+}
+
+function HeartIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
+      <path d="M12 20.5s-7.5-4.7-7.5-9.7a4.3 4.3 0 0 1 7.5-2.9 4.3 4.3 0 0 1 7.5 2.9c0 5-7.5 9.7-7.5 9.7Z" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function UserIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M4.5 20a7.5 7.5 0 0 1 15 0" strokeLinecap="round" />
     </svg>
   );
 }

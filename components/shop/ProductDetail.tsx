@@ -11,6 +11,7 @@ import { FlowerMark } from "../art/FlowerMark";
 import { Garment } from "../art/Garment";
 import { QtyStepper } from "../CartDrawer";
 import { useCart } from "../providers/CartProvider";
+import { SaveButton } from "./SaveButton";
 import { SizeChart } from "./SizeChart";
 
 const VIEWS = ["Front", "Back", "Close-up"] as const;
@@ -278,6 +279,12 @@ export function ProductDetail({ product }: { product: Product }) {
             </AnimatePresence>
           </motion.button>
         </div>
+
+        <SaveButton
+          productId={product.id}
+          label
+          className="mt-4 w-full rounded-2xl border border-line bg-paper py-3.5 text-ink hover:border-ink/40"
+        />
 
         <ul className="mt-6 grid grid-cols-2 gap-2 text-sm text-ink-soft">
           {["🕒 24×7 ordering", "🚚 Free over " + inr(STORE.freeShippingAbove), "💵 Cash on Delivery", "🔁 Easy size exchange"].map((t) => (
