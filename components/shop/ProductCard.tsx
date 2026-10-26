@@ -7,6 +7,7 @@ import { isStudioShot } from "@/lib/photo";
 import { inr } from "@/lib/store";
 import type { Product } from "@/lib/types";
 import { Garment } from "../art/Garment";
+import { BagIcon } from "../Navbar";
 import { useCart } from "../providers/CartProvider";
 import { SaveButton } from "./SaveButton";
 
@@ -81,7 +82,7 @@ export function ProductCard({ product }: { product: Product }) {
                 initial={{ y: 24, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 24, opacity: 0 }}
-                className="glass-light rounded-2xl p-3"
+                className="glass-light rounded-2xl p-2.5 sm:p-3"
               >
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-[11px] font-extrabold uppercase tracking-widest text-ink-soft">Pick a size</span>
@@ -94,7 +95,7 @@ export function ProductCard({ product }: { product: Product }) {
                     <button
                       key={s}
                       onClick={() => addSize(s)}
-                      className="rounded-full border border-ink/15 bg-paper px-3 py-1.5 text-xs font-bold transition-colors hover:bg-ink hover:text-paper"
+                      className="rounded-full border border-ink/15 bg-paper px-2.5 py-1.5 text-xs font-bold transition-colors hover:bg-ink hover:text-paper sm:px-3"
                     >
                       {s}
                     </button>
@@ -109,9 +110,23 @@ export function ProductCard({ product }: { product: Product }) {
                 exit={{ y: 24, opacity: 0 }}
                 onClick={() => setPicking(true)}
                 disabled={!product.inStock}
-                className="w-full rounded-2xl bg-ink py-2.5 text-[13px] font-bold text-paper disabled:bg-ink/40"
+                aria-label={product.inStock ? `Add ${product.name} to bag` : "Sold out"}
+                className={`ml-auto flex items-center justify-center rounded-full bg-ink text-[13px] font-bold text-paper shadow-md disabled:bg-ink/40 sm:w-full sm:rounded-2xl sm:py-2.5 sm:shadow-none ${
+                  product.inStock ? "h-10 w-10 sm:h-auto" : "h-8 px-3 text-[11px] sm:h-auto sm:text-[13px]"
+                }`}
               >
-                {product.inStock ? "Add to bag +" : "Sold out"}
+                {product.inStock ? (
+                  <>
+                    {/* Phones: a small round button, so the photo stays visible */}
+                    <span className="relative sm:hidden" aria-hidden>
+                      <BagIcon className="h-[18px] w-[18px]" />
+                      <span className="absolute -right-1.5 -top-1.5 grid h-3.5 w-3.5 place-items-center rounded-full bg-butter text-[10px] font-extrabold leading-none text-ink">+</span>
+                    </span>
+                    <span className="hidden sm:inline">Add to bag +</span>
+                  </>
+                ) : (
+                  "Sold out"
+                )}
               </motion.button>
             )}
           </AnimatePresence>
@@ -119,8 +134,8 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
 
       <Link href={`/product/${product.slug}`} className="mt-3 block px-1">
-        <h3 className="font-display text-lg leading-tight tracking-tight">{product.name}</h3>
-        <p className="mt-0.5 text-[13px] text-ink-soft">
+        <h3 className="font-display text-base leading-tight tracking-tight sm:text-lg">{product.name}</h3>
+        <p className="mt-0.5 line-clamp-2 text-xs text-ink-soft sm:text-[13px]">
           {product.fabric} · {product.colour}
         </p>
         <p className="mt-1.5 font-bold">

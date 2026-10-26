@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useLenis } from "lenis/react";
+import { useEffect, useRef, useState } from "react";
 import { STORE, inr } from "@/lib/store";
 import { Logo } from "./art/Logo";
+import { WhatsAppIcon } from "./WhatsAppFab";
 import { useAccount } from "./providers/AccountProvider";
 import { useCart } from "./providers/CartProvider";
 
@@ -23,8 +25,32 @@ export function Navbar() {
   const { customer, wishlist } = useAccount();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(90);
+  const lenis = useLenis();
 
   useEffect(() => setMenuOpen(false), [pathname]);
+
+  // The menu sits just under the header, whatever height the header ends up
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setHeaderHeight(el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // Keep the page still while the menu is open
+  useEffect(() => {
+    if (!menuOpen) return;
+    lenis?.stop();
+    const close = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+    window.addEventListener("keydown", close);
+    return () => {
+      lenis?.start();
+      window.removeEventListener("keydown", close);
+    };
+  }, [menuOpen, lenis]);
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
@@ -49,10 +75,13 @@ export function Navbar() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50">
+      <header ref={headerRef} className="fixed inset-x-0 top-0 z-50">
         {/* Offer strip */}
-        <div className="relative bg-sage-deep px-4 py-1.5 text-center text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper sm:text-[11px]">
-          24×7 ordering available · Free shipping over {inr(STORE.freeShippingAbove)}
+        {/* One line on every screen: phones get the short version so it never wraps */}
+        <div className="relative truncate bg-sage-deep px-4 py-1.5 text-center text-[10.5px] font-bold uppercase tracking-[0.12em] text-paper sm:text-[11px] sm:tracking-[0.14em]">
+          <span className="hidden sm:inline">24×7 ordering available · </span>
+          Free shipping over {inr(STORE.freeShippingAbove)}
+          <span className="sm:hidden"> · COD available</span>
           <span className="hidden lg:inline"> · Cash on Delivery</span>
           <Link
             href="/track"
@@ -68,7 +97,7 @@ export function Navbar() {
             <LayoutGroup id="nav">
               <div className="flex items-center gap-7">
                 <button
-                  className="grid h-9 w-9 place-items-center rounded-full md:hidden"
+                  className="-ml-2 grid h-11 w-11 place-items-center rounded-full md:hidden"
                   onClick={() => setMenuOpen((v) => !v)}
                   aria-label="Menu"
                   aria-expanded={menuOpen}
@@ -87,7 +116,7 @@ export function Navbar() {
                 <Logo className="h-9 sm:h-10" />
               </Link>
 
-              <div className="flex items-center justify-end gap-7">
+              <div className="flex items-center justify-end gap-0.5 sm:gap-2 md:gap-5 lg:gap-7">
                 <div className="hidden items-center gap-7 md:flex">
                   {RIGHT.map(navLink)}
                 </div>
@@ -106,7 +135,7 @@ export function Navbar() {
 
                 <Link
                   href={customer ? "/account" : "/login"}
-                  className="grid h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-sage/70"
+                  className="grid h-10 w-10 place-items-center rounded-full text-ink transition-colors hover:bg-sage/70"
                   aria-label={customer ? `Your account, ${customer.name}` : "Log in"}
                   title={customer ? customer.name : "Log in"}
                 >
@@ -121,7 +150,7 @@ export function Navbar() {
 
                 <button
                   onClick={open}
-                  className="flex items-center gap-1.5 rounded-full py-1.5 pl-2.5 pr-1.5 text-ink transition-colors hover:bg-sage/70"
+                  className="-mr-1.5 flex h-10 items-center gap-1.5 rounded-full pl-2.5 pr-1.5 text-ink transition-colors hover:bg-sage/70"
                   aria-label={`Open bag, ${count} items`}
                 >
                   <BagIcon className="h-[18px] w-[18px]" />
@@ -145,26 +174,66 @@ export function Navbar() {
 
       <AnimatePresence>
         {menuOpen && (
-          <motion.div
-            className="fixed inset-x-0 top-[86px] z-40 border-b border-line bg-cream/95 px-4 pb-4 pt-2 shadow-lg backdrop-blur-md md:hidden"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-          >
-            {[...LEFT, ...RIGHT, { href: "/track", label: "Track order" }].map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                onClick={() => setMenuOpen(false)}
-                className={`block rounded-xl px-4 py-3 text-[13px] font-bold uppercase tracking-[0.16em] ${
-                  isActive(l.href) ? "bg-sage text-ink" : "text-ink-soft"
-                }`}
+          <>
+            {/* Dim the page behind the menu; tapping it closes the menu */}
+            <motion.div
+              className="fixed inset-0 z-40 bg-ink/25 backdrop-blur-[2px] md:hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMenuOpen(false)}
+            />
+            <motion.div
+              className="fixed inset-x-3 z-40 max-h-[calc(100svh-7rem)] overflow-y-auto rounded-[28px] border border-line bg-paper p-3 shadow-2xl md:hidden"
+              style={{ top: headerHeight + 8 }}
+              initial={{ opacity: 0, y: -12, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -12, scale: 0.98 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              data-lenis-prevent
+            >
+              <nav className="flex flex-col">
+                {[...LEFT, ...RIGHT].map((l) => (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    onClick={() => setMenuOpen(false)}
+                    className={`flex items-center justify-between rounded-2xl px-4 py-3.5 font-display text-2xl tracking-tight ${
+                      isActive(l.href) ? "bg-sage text-ink" : "text-ink"
+                    }`}
+                  >
+                    {l.label}
+                    <span aria-hidden className="text-base text-ink-soft">→</span>
+                  </Link>
+                ))}
+              </nav>
+              <div className="mt-2 grid grid-cols-3 gap-2 border-t border-line pt-3">
+                {[
+                  { href: "/track", label: "Track order", icon: <BagIcon className="h-5 w-5" /> },
+                  { href: "/wishlist", label: wishlist.length ? `Saved (${wishlist.length})` : "Saved", icon: <HeartIcon className="h-5 w-5" /> },
+                  { href: customer ? "/account" : "/login", label: customer ? "Account" : "Log in", icon: <UserIcon className="h-5 w-5" /> },
+                ].map((l) => (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex flex-col items-center gap-1.5 rounded-2xl bg-cream px-2 py-3 text-center text-xs font-bold text-ink"
+                  >
+                    {l.icon}
+                    {l.label}
+                  </Link>
+                ))}
+              </div>
+              <a
+                href={`https://wa.me/${STORE.whatsappNumber}`}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-2 flex items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-4 py-3.5 text-sm font-bold text-white"
               >
-                {l.label}
-              </Link>
-            ))}
-          </motion.div>
+                <WhatsAppIcon className="h-5 w-5" /> Chat with us on WhatsApp
+              </a>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>

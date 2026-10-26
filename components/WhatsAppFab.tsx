@@ -21,14 +21,17 @@ export function WhatsAppFab() {
           target="_blank"
           rel="noreferrer"
           aria-label="Chat with us on WhatsApp"
-          className="fixed bottom-5 right-5 z-40 grid h-14 w-14 place-items-center rounded-full bg-[#25D366] text-white shadow-[0_12px_30px_-10px_rgba(37,211,102,0.7)]"
+          className={`fixed right-4 z-40 grid h-12 w-12 place-items-center rounded-full bg-[#25D366] text-white shadow-[0_12px_30px_-10px_rgba(37,211,102,0.7)] sm:right-5 sm:h-14 sm:w-14 ${
+            // Product pages have a buy bar along the bottom on phones; sit above it
+            pathname.startsWith("/product") ? "bottom-24 lg:bottom-5" : "bottom-4 sm:bottom-5"
+          }`}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           exit={{ scale: 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 18 }}
           whileHover={{ scale: 1.08, rotate: -8 }}
         >
-          <WhatsAppIcon className="h-7 w-7" />
+          <WhatsAppIcon className="h-6 w-6 sm:h-7 sm:w-7" />
         </motion.a>
       )}
     </AnimatePresence>

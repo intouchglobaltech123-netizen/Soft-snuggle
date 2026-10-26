@@ -13,7 +13,24 @@ export interface Collection {
 }
 
 // One character per hero slide. Swap `look` for a 3D render later.
+// A photo in public/hero/<slug>.(png|webp) replaces the illustration for that slide.
 export const COLLECTIONS: Collection[] = [
+  {
+    // Shown with the real photo in public/hero/cherry.webp. The look below is
+    // only the fallback if that photo is ever removed.
+    slug: "cherry",
+    productSlug: "cherry-frock",
+    eyebrow: "New in",
+    title: "Cherry",
+    accent: "Bloom",
+    label: "Cherry Bloom Frock",
+    blurb: "A twirl-ready muslin frock scattered with little red cherries, with snaps down the front.",
+    glow: "#F6E6CC",
+    look: {
+      skin: "#B97F5C", hair: "#24190F", hairStyle: "curls", outfit: "#F6E7C8",
+      kind: "bodysuit", detail: "heart", accessory: "bow", accessoryColor: "#F2B8B0", prop: "none",
+    },
+  },
   {
     slug: "everyday",
     productSlug: "everyday-bodysuit",
@@ -99,3 +116,6 @@ export const COLLECTIONS: Collection[] = [
     },
   },
 ];
+
+/** A character's look by collection slug, so other sections don't depend on slide order. */
+export const lookFor = (slug: string) => (COLLECTIONS.find((c) => c.slug === slug) ?? COLLECTIONS[0]).look;

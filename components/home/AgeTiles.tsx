@@ -4,10 +4,10 @@ import Link from "next/link";
 import { motion, useScroll, useSpring, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { AGE_GROUPS } from "@/lib/store";
-import { COLLECTIONS } from "@/lib/collections";
+import { lookFor } from "@/lib/collections";
 import { Baby } from "../art/Baby";
 
-const LOOKS = [COLLECTIONS[5].look, COLLECTIONS[3].look, COLLECTIONS[1].look, COLLECTIONS[4].look];
+const LOOKS = [lookFor("welcome"), lookFor("cloud"), lookFor("sunday"), lookFor("wiggler")];
 const NOTES = [
   "Snug, gentle firsts for the fourth trimester.",
   "Easy snaps for the many, many changes.",

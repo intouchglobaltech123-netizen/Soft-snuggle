@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
-import { COLLECTIONS } from "@/lib/collections";
+import { lookFor } from "@/lib/collections";
 import { Baby } from "../art/Baby";
 import { FlowerMark } from "../art/FlowerMark";
 import { Reveal } from "../Reveal";
@@ -39,7 +39,7 @@ export function Story() {
         <div className="relative h-[420px] lg:h-auto lg:min-h-[560px]">
           <motion.div className="absolute bottom-10 left-1/2 h-[46%] w-[78%] -translate-x-1/2 rounded-[50%] bg-[#C5D4C3]" style={{ y: cloudY }} />
           <motion.div className="absolute bottom-16 left-1/2 aspect-[220/320] h-[78%] -translate-x-1/2" style={{ y: babyY, rotate }}>
-            <Baby look={COLLECTIONS[2].look} className="h-full w-full" />
+            <Baby look={lookFor("bloom")} className="h-full w-full" />
           </motion.div>
           {[["12%", "18%"], ["78%", "26%"], ["70%", "70%"]].map(([l, t], i) => (
             <div key={i} className="anim-float absolute" style={{ left: l, top: t, animationDelay: `${i * 0.8}s` }}>

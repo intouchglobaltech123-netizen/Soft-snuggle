@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useLenis } from "lenis/react";
+import { useEffect, useRef, useState } from "react";
 import { defaultColour } from "@/lib/colours";
 import { isStudioShot } from "@/lib/photo";
 import { CATEGORY_LABELS, STORE, inr } from "@/lib/store";
@@ -25,6 +26,17 @@ export function ProductDetail({ product }: { product: Product }) {
   const [added, setAdded] = useState(false);
   const [needSize, setNeedSize] = useState(false);
   const [openPanel, setOpenPanel] = useState<string | null>("details");
+  // Phones: once the main "Add to bag" row scrolls away, a slim bar keeps it in reach
+  const buyRef = useRef<HTMLDivElement>(null);
+  const [buyVisible, setBuyVisible] = useState(true);
+  const lenis = useLenis();
+  useEffect(() => {
+    const el = buyRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setBuyVisible(e.isIntersecting || e.boundingClientRect.top > 0));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   const photos = product.images;
   const [photo, setPhoto] = useState(0);
   // The frame takes the shape of the photo inside it, so a wide gift box does
@@ -82,7 +94,7 @@ export function ProductDetail({ product }: { product: Product }) {
   ];
 
   return (
-    <section className="mx-auto grid max-w-6xl gap-10 px-6 pb-24 pt-28 sm:pt-32 lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-14">
+    <section className="mx-auto grid max-w-6xl gap-8 px-4 pb-24 pt-28 sm:gap-10 sm:px-6 sm:pt-32 lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-14">
       {/* Visual */}
       {/* Capped so the photo stays a product shot rather than growing to fill
           whatever width the screen offers. Full width on a phone, where the
@@ -189,12 +201,12 @@ export function ProductDetail({ product }: { product: Product }) {
             {CATEGORY_LABELS[product.category]}
           </Link>
         </nav>
-        <h1 className="mt-3 font-display text-5xl leading-[1.02] tracking-tight sm:text-6xl">{product.name}</h1>
-        <p className="mt-3 text-lg text-ink-soft">
+        <h1 className="mt-3 font-display text-4xl leading-[1.04] tracking-tight sm:text-6xl">{product.name}</h1>
+        <p className="mt-3 text-base text-ink-soft sm:text-lg">
           {product.fabric} · {product.colour}
           {product.organic && <span className="ml-2 rounded-full bg-sage px-2.5 py-0.5 text-xs font-extrabold text-ink">✿ Organic</span>}
         </p>
-        <p className="mt-5 font-display text-4xl">
+        <p className="mt-4 font-display text-3xl sm:mt-5 sm:text-4xl">
           {inr(product.price)}
           {product.compareAt && <s className="ml-3 text-xl text-ink-soft">{inr(product.compareAt)}</s>}
         </p>
@@ -248,7 +260,7 @@ export function ProductDetail({ product }: { product: Product }) {
                 <button
                   key={s}
                   onClick={() => setSize(s)}
-                  className={`relative min-w-20 rounded-2xl border px-4 py-3 font-bold transition-colors ${
+                  className={`relative min-w-[4.5rem] rounded-2xl border px-4 py-3 font-bold transition-colors sm:min-w-20 ${
                     size === s ? "border-ink text-paper" : needSize ? "border-rose" : "border-line bg-paper hover:border-ink/40"
                   }`}
                 >
@@ -272,7 +284,7 @@ export function ProductDetail({ product }: { product: Product }) {
           </AnimatePresence>
         </div>
 
-        <div className="mt-8 flex items-center gap-3">
+        <div ref={buyRef} className="mt-8 flex items-center gap-3">
           <QtyStepper value={qty} onChange={(v) => setQty(Math.max(1, v))} />
           <motion.button
             onClick={addToBag}
@@ -300,9 +312,9 @@ export function ProductDetail({ product }: { product: Product }) {
           className="mt-4 w-full rounded-2xl border border-line bg-paper py-3.5 text-ink hover:border-ink/40"
         />
 
-        <ul className="mt-6 grid grid-cols-2 gap-2 text-sm text-ink-soft">
+        <ul className="mt-6 grid grid-cols-2 gap-2 text-[13px] text-ink-soft sm:text-sm">
           {["🕒 24×7 ordering", "🚚 Free over " + inr(STORE.freeShippingAbove), "💵 Cash on Delivery", "🔁 Easy size exchange"].map((t) => (
-            <li key={t} className="rounded-2xl bg-paper px-4 py-3 font-semibold">{t}</li>
+            <li key={t} className="rounded-2xl bg-paper px-3 py-3 font-semibold sm:px-4">{t}</li>
           ))}
         </ul>
 
@@ -311,7 +323,7 @@ export function ProductDetail({ product }: { product: Product }) {
             <div key={p.key}>
               <button
                 onClick={() => setOpenPanel(openPanel === p.key ? null : p.key)}
-                className="flex w-full items-center justify-between py-5 text-left font-display text-xl"
+                className="flex w-full items-center justify-between py-4 text-left font-display text-lg sm:py-5 sm:text-xl"
               >
                 {p.title}
                 <motion.span animate={{ rotate: openPanel === p.key ? 45 : 0 }} className="text-2xl">+</motion.span>
@@ -332,6 +344,34 @@ export function ProductDetail({ product }: { product: Product }) {
           ))}
         </div>
       </motion.div>
+
+      <AnimatePresence>
+        {!buyVisible && product.inStock && (
+          <motion.div
+            className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-10px_30px_-18px_rgba(38,59,54,0.5)] backdrop-blur-md lg:hidden"
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 32 }}
+          >
+            <div className="mx-auto flex max-w-xl items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-display text-base leading-tight">{product.name}</p>
+                <p className="text-sm font-bold">
+                  {inr(product.price)}
+                  {size && <span className="ml-1.5 font-semibold text-ink-soft">· {size}</span>}
+                </p>
+              </div>
+              <button
+                onClick={() => (size ? addToBag() : buyRef.current && (lenis ? lenis.scrollTo(buyRef.current, { offset: -240 }) : buyRef.current.scrollIntoView({ block: "center" })))}
+                className={`btn-primary shrink-0 px-5 py-3 text-sm ${added ? "!bg-sage-deep" : ""}`}
+              >
+                {added ? "Added ✓" : size ? "Add to bag" : "Choose size"}
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

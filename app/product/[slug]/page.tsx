@@ -27,13 +27,13 @@ export default async function ProductPage({ params }: Params) {
   return (
     <div className="speckle">
       <ProductDetail product={product} />
-      <section className="mx-auto max-w-7xl px-6 pb-24">
+      <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6">
         <Reveal>
-          <h2 className="mb-8 font-display text-4xl tracking-tight">
+          <h2 className="mb-6 font-display text-3xl tracking-tight sm:mb-8 sm:text-4xl">
             You might <em className="text-sage-deep">also love</em>
           </h2>
         </Reveal>
-        <div className="grid grid-cols-1 gap-x-6 gap-y-12 min-[460px]:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-4">
           {related.map((p, i) => (
             <Reveal key={p.id} delay={i * 0.08}>
               <ProductCard product={p} />

@@ -26,11 +26,11 @@ export default async function HomePage() {
       <Statement />
       <AgeTiles counts={counts} />
 
-      <section id="favourites" className="mx-auto max-w-7xl px-6 py-24 sm:py-32">
+      <section id="favourites" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-32">
         <Reveal className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
           <div>
             <p className="eyebrow">The soft stuff</p>
-            <h2 className="mt-3 font-display text-5xl tracking-tight sm:text-6xl">
+            <h2 className="mt-3 font-display text-4xl tracking-tight sm:text-6xl">
               Little <em className="text-sage-deep">favourites</em>
             </h2>
             <p className="mt-3 text-lg text-ink-soft">Everyday pieces made for the beautifully messy bits.</p>
