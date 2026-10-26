@@ -18,6 +18,35 @@ interface AccountContextValue {
 
 const AccountContext = createContext<AccountContextValue | null>(null);
 
+/**
+ * A server that crashes answers with an empty body or an HTML error page, and
+ * res.json() then throws a parse error that says nothing about what went wrong.
+ * This keeps the real failure visible and always hands back something usable.
+ */
+async function send(url: string, body: unknown): Promise<{ ok: boolean; data: Record<string, unknown> }> {
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const text = await res.text();
+    let data: Record<string, unknown> = {};
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = { error: res.ok ? "We got an unexpected reply from the server." : text.slice(0, 200) };
+      }
+    } else if (!res.ok) {
+      data = { error: `The server stopped responding (error ${res.status}). Please try again.` };
+    }
+    return { ok: res.ok, data };
+  } catch {
+    return { ok: false, data: { error: "We couldn't reach the server. Check your connection and try again." } };
+  }
+}
+
 export function AccountProvider({ children }: { children: React.ReactNode }) {
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [wishlist, setWishlist] = useState<number[]>([]);
@@ -27,7 +56,8 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
   const refresh = useCallback(async () => {
     try {
       const res = await fetch("/api/auth/me");
-      const data = await res.json();
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : {};
       setCustomer(data.customer ?? null);
       setWishlist(data.wishlist ?? []);
       setOrders(data.orders ?? []);
@@ -51,13 +81,8 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
       // Flip it straight away: a heart that waits for the server feels broken.
       setWishlist((prev) => (wasSaved ? prev.filter((id) => id !== productId) : [productId, ...prev]));
       try {
-        const res = await fetch("/api/wishlist", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ productId, saved: !wasSaved }),
-        });
-        const data = await res.json();
-        if (Array.isArray(data.wishlist)) setWishlist(data.wishlist);
+        const { data } = await send("/api/wishlist", { productId, saved: !wasSaved });
+        if (Array.isArray(data.wishlist)) setWishlist(data.wishlist as number[]);
       } catch {
         setWishlist((prev) => (wasSaved ? [productId, ...prev] : prev.filter((id) => id !== productId)));
       }
@@ -67,31 +92,21 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
   );
 
   const login = useCallback<AccountContextValue["login"]>(async (phone, password) => {
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, password }),
-    });
-    const data = await res.json();
-    if (!res.ok) return data.error ?? "Something went wrong.";
+    const { ok, data } = await send("/api/auth/login", { phone, password });
+    if (!ok) return (data.error as string) ?? "Something went wrong.";
     await refresh();
     return null;
   }, [refresh]);
 
   const signup = useCallback<AccountContextValue["signup"]>(async (input) => {
-    const res = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(input),
-    });
-    const data = await res.json();
-    if (!res.ok) return data.error ?? "Something went wrong.";
+    const { ok, data } = await send("/api/auth/signup", input);
+    if (!ok) return (data.error as string) ?? "Something went wrong.";
     await refresh();
     return null;
   }, [refresh]);
 
   const logout = useCallback(async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
+    await send("/api/auth/logout", {});
     setCustomer(null);
     setWishlist([]);
     setOrders([]);

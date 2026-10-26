@@ -15,14 +15,28 @@ export async function POST(req: Request) {
   const password = typeof body.password === "string" ? body.password : "";
   // One message for a wrong number and a wrong password, so this cannot be used
   // to find out which mobile numbers have accounts.
-  const wrong = NextResponse.json({ error: "That number and password don't match." }, { status: 401 });
-  if (!phone || !password) return wrong;
+  const wrong = () => NextResponse.json({ error: "That number and password don't match." }, { status: 401 });
+  if (!phone || !password) return wrong();
 
-  const row = await findCustomerByPhone(phone);
-  if (!row || !(await verifyPassword(password, row.password_hash))) return wrong;
+  try {
+    const row = await findCustomerByPhone(phone);
+    if (!row || !(await verifyPassword(password, row.password_hash))) return wrong();
 
-  await noteLogin(row.id);
-  await startSession(row.id);
-  const { password_hash: _ignored, ...customer } = row;
-  return NextResponse.json({ customer });
+    await noteLogin(row.id);
+    await startSession(row.id);
+    const { password_hash: _ignored, ...customer } = row;
+    return NextResponse.json({ customer });
+  } catch (err) {
+    // Without this the route throws, the browser gets an empty body, and the
+    // only thing the person sees is a JSON parse error with no cause in it.
+    console.error("login failed", err);
+    const detail = err instanceof Error ? err.message : String(err);
+    return NextResponse.json(
+      {
+        error: "We couldn't log you in just now. Please try again.",
+        ...(process.env.NODE_ENV === "development" ? { detail } : {}),
+      },
+      { status: 500 },
+    );
+  }
 }

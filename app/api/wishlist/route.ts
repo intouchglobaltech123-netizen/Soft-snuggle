@@ -18,8 +18,12 @@ export async function POST(req: Request) {
   const productId = Number(body.productId);
   if (!Number.isInteger(productId)) return NextResponse.json({ error: "Invalid request." }, { status: 400 });
 
-  if (body.saved === false) await removeFromWishlist(customer.id, productId);
-  else await addToWishlist(customer.id, productId);
-
-  return NextResponse.json({ wishlist: await getWishlist(customer.id) });
+  try {
+    if (body.saved === false) await removeFromWishlist(customer.id, productId);
+    else await addToWishlist(customer.id, productId);
+    return NextResponse.json({ wishlist: await getWishlist(customer.id) });
+  } catch (err) {
+    console.error("wishlist update failed", err);
+    return NextResponse.json({ error: "We couldn't save that just now." }, { status: 500 });
+  }
 }
