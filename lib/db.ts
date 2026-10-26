@@ -49,7 +49,50 @@ async function connect(): Promise<Db> {
 
   await db.exec(SCHEMA_SQL);
   await syncCatalogue(db);
-  return db;
+  return selfHealing(db);
+}
+
+// The connection is cached for the life of the process, so a schema added after
+// the server started is never created and every query against it fails. That is
+// easy to hit in development, where the server keeps running across a git pull.
+// Rather than leave a dead site until someone restarts it, a query that fails
+// because a table or column is missing runs the schema once and tries again.
+function selfHealing(db: Db): Db {
+  let healing: Promise<void> | null = null;
+
+  const heal = () => {
+    healing ??= (async () => {
+      await db.exec(SCHEMA_SQL);
+      await syncCatalogue(db);
+    })().finally(() => {
+      healing = null;
+    });
+    return healing;
+  };
+
+  // 42P01 is an unknown table, 42703 an unknown column. PGlite reports the same
+  // thing in the message rather than a code, so both are checked.
+  const isMissing = (err: unknown) => {
+    const code = (err as { code?: string })?.code;
+    if (code === "42P01" || code === "42703") return true;
+    const message = err instanceof Error ? err.message : String(err);
+    return /relation .* does not exist|column .* does not exist/i.test(message);
+  };
+
+  const retrying = <T>(run: () => Promise<T>) => async (): Promise<T> => {
+    try {
+      return await run();
+    } catch (err) {
+      if (!isMissing(err)) throw err;
+      await heal();
+      return run();
+    }
+  };
+
+  return {
+    query: (sql, params) => retrying(() => db.query(sql, params))(),
+    exec: (sql) => retrying(() => db.exec(sql))(),
+  } as Db;
 }
 
 // lib/seed.ts is the catalogue: there is no admin screen, so the file is the

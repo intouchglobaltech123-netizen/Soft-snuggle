@@ -34,6 +34,15 @@ export async function POST(req: Request) {
   } catch (err) {
     if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: 409 });
     console.error("signup failed", err);
-    return NextResponse.json({ error: "We couldn't create your account. Please try again." }, { status: 500 });
+    const detail = err instanceof Error ? err.message : String(err);
+    return NextResponse.json(
+      {
+        error: "We couldn't create your account. Please try again.",
+        // Only in development, so the person running the site can see the cause
+        // instead of guessing. Never sent from a live site.
+        ...(process.env.NODE_ENV === "development" ? { detail } : {}),
+      },
+      { status: 500 },
+    );
   }
 }
