@@ -1,5 +1,3 @@
-import { mkdirSync } from "node:fs";
-import path from "node:path";
 import { SCHEMA_SQL } from "./schema";
 import { SEED_PRODUCTS } from "./seed";
 
@@ -40,10 +38,8 @@ async function connect(): Promise<Db> {
   } else if (process.env.VERCEL) {
     throw new Error("DATABASE_URL is not set. Add a Postgres database (Vercel → Storage → Neon) and redeploy.");
   } else {
-    const { PGlite } = await import("@electric-sql/pglite");
-    const dataDir = path.join(process.cwd(), ".data");
-    mkdirSync(dataDir, { recursive: true });
-    const lite = await PGlite.create(path.join(dataDir, "pglite"));
+    const { getPglite } = await import("./pglite");
+    const lite = await getPglite();
     db = {
       query: async (sql, params) => {
         const res = await lite.query(sql, params);

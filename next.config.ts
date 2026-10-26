@@ -11,6 +11,13 @@ const nextConfig: NextConfig = {
   },
   // Hide the floating "N" dev-tools button while developing
   devIndicators: false,
+  webpack: (config) => {
+    // node-postgres optionally uses a native driver we do not ship. Webpack
+    // tries to resolve it anyway when it traces instrumentation.ts, so it is
+    // declared external rather than bundled.
+    config.externals = [...(config.externals ?? []), "pg-native"];
+    return config;
+  },
 };
 
 export default nextConfig;
