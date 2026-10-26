@@ -18,6 +18,12 @@ interface AccountContextValue {
 
 const AccountContext = createContext<AccountContextValue | null>(null);
 
+/** In development the server sends the real cause; showing it beats guessing. */
+function withDetail(data: Record<string, unknown>) {
+  const error = (data.error as string) ?? "Something went wrong.";
+  return data.detail ? `${error} (${data.detail as string})` : error;
+}
+
 /**
  * A server that crashes answers with an empty body or an HTML error page, and
  * res.json() then throws a parse error that says nothing about what went wrong.
@@ -93,14 +99,14 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback<AccountContextValue["login"]>(async (phone, password) => {
     const { ok, data } = await send("/api/auth/login", { phone, password });
-    if (!ok) return (data.error as string) ?? "Something went wrong.";
+    if (!ok) return withDetail(data);
     await refresh();
     return null;
   }, [refresh]);
 
   const signup = useCallback<AccountContextValue["signup"]>(async (input) => {
     const { ok, data } = await send("/api/auth/signup", input);
-    if (!ok) return (data.error as string) ?? "Something went wrong.";
+    if (!ok) return withDetail(data);
     await refresh();
     return null;
   }, [refresh]);

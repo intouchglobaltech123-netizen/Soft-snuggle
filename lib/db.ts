@@ -10,8 +10,16 @@ export interface Db {
   exec(sql: string): Promise<void>;
 }
 
+// Bump this whenever SCHEMA_SQL changes. The connection below outlives a code
+// reload, so without a version the new schema is never applied to it and the
+// site keeps failing until someone restarts the server by hand.
+const SCHEMA_VERSION = 2;
+
 // Survives hot reloads in dev so we never open the database twice.
-const globalForDb = globalThis as unknown as { __softSnuggleDb?: Promise<Db> };
+const globalForDb = globalThis as unknown as {
+  __softSnuggleDb?: Promise<Db>;
+  __softSnuggleSchema?: number;
+};
 
 async function connect(): Promise<Db> {
   const url = process.env.DATABASE_URL;
@@ -139,9 +147,20 @@ async function syncCatalogue(db: Db) {
 
 export function getDb(): Promise<Db> {
   if (!globalForDb.__softSnuggleDb) {
+    globalForDb.__softSnuggleSchema = SCHEMA_VERSION;
     globalForDb.__softSnuggleDb = connect().catch((err) => {
       globalForDb.__softSnuggleDb = undefined;
+      globalForDb.__softSnuggleSchema = undefined;
       throw err;
+    });
+  } else if (globalForDb.__softSnuggleSchema !== SCHEMA_VERSION) {
+    // The server was already running when newer code arrived. Bring the open
+    // connection up to date rather than leaving it on yesterday's schema.
+    globalForDb.__softSnuggleSchema = SCHEMA_VERSION;
+    globalForDb.__softSnuggleDb = globalForDb.__softSnuggleDb.then(async (db) => {
+      await db.exec(SCHEMA_SQL);
+      await syncCatalogue(db);
+      return selfHealing(db);
     });
   }
   return globalForDb.__softSnuggleDb;
