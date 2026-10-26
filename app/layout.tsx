@@ -30,7 +30,16 @@ export const viewport: Viewport = { themeColor: "#F7F4EC" };
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${fraunces.variable} ${nunito.variable}`}>
-      <body>
+      {/*
+        Browser extensions write their own attributes onto <body> before React
+        loads: Grammarly adds data-gr-ext-installed, password managers and
+        translators do similar. React then sees a <body> that does not match
+        what the server sent and reports a hydration mismatch that no change
+        here could fix. This tells React to ignore attribute differences on
+        this one element. It does not extend to anything inside it, so real
+        mismatches in the app are still reported.
+      */}
+      <body suppressHydrationWarning>
         <SmoothScroll>
           <IntroProvider>
             <AccountProvider>
