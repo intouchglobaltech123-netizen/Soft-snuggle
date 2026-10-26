@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { AnimatePresence, LayoutGroup, motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { useState } from "react";
+import { defaultColour } from "@/lib/colours";
 import { isStudioShot } from "@/lib/photo";
 import { CATEGORY_LABELS, STORE, inr } from "@/lib/store";
 import type { Product } from "@/lib/types";
@@ -18,7 +19,7 @@ export function ProductDetail({ product }: { product: Product }) {
   const { add } = useCart();
   const [view, setView] = useState<(typeof VIEWS)[number]>("Front");
   const [size, setSize] = useState<string | null>(null);
-  const [colour, setColour] = useState(product.colours[0]);
+  const [colour, setColour] = useState(() => defaultColour(product, product.colours));
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [needSize, setNeedSize] = useState(false);

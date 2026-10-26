@@ -2,30 +2,39 @@ import type { ColourOption, Product } from "./types";
 
 // Colour choices shown as round swatches on every product page.
 //
-// EDIT THIS FILE to match the colours you really stock:
-//   * OVERRIDES lists the exact colours for one product (by slug). Add `image`
-//     (a path under /public) to switch the main photo when that colour is picked.
-//   * Any product without an override gets its own colour first, then 3 from FALLBACK.
-// Colour names are saved with the cart item and the order, so keep them stable.
+// RAINBOW is the seven-colour set, kept in rainbow order so the swatches read
+// left to right as a rainbow. Add `image` (a path under /public) to any colour
+// and picking it switches the main photo, e.g.
+//   { name: "Cherry Red", hex: "#DE6B63", image: "/products/cherry-frock/1-red.webp" }
+//
+// OVERRIDES gives one product (by slug) its own list instead of the seven.
+//
+// Colour names are stored with every cart item and past order, so renaming one
+// changes what old orders read. Add and remove freely; rename sparingly.
 
-const FALLBACK: ColourOption[] = [
+const RAINBOW: ColourOption[] = [
+  { name: "Cherry Red", hex: "#DE6B63" },
+  { name: "Apricot Orange", hex: "#F2A86B" },
   { name: "Butter Yellow", hex: "#F3E3A3" },
-  { name: "Blush Pink", hex: "#F4C6C6" },
-  { name: "Sky Blue", hex: "#BDD7EA" },
-  { name: "Sage Green", hex: "#C3D7BE" },
+  { name: "Leaf Green", hex: "#A8C9A0" },
+  { name: "Sky Blue", hex: "#9FC4E0" },
+  { name: "Periwinkle Indigo", hex: "#8E96C9" },
+  { name: "Lilac Violet", hex: "#C4A5D1" },
 ];
 
 const OVERRIDES: Record<string, ColourOption[]> = {
   // "cherry-jabla": [
   //   { name: "Butter Yellow", hex: "#F3E3A3", image: "/products/cherry-jabla/1-front.webp" },
-  //   { name: "Blush Pink", hex: "#F4C6C6" },
+  //   { name: "Cherry Red", hex: "#DE6B63", image: "/products/cherry-jabla/1-red.webp" },
   // ],
 };
 
-const titleCase = (s: string) => s.replace(/\b\w/g, (c) => c.toUpperCase());
-
 export function coloursFor(p: Pick<Product, "slug" | "colour" | "garment">): ColourOption[] {
-  if (OVERRIDES[p.slug]) return OVERRIDES[p.slug];
-  const own: ColourOption = { name: titleCase(p.colour.split(",")[0].trim()), hex: p.garment };
-  return [own, ...FALLBACK.filter((c) => c.name.toLowerCase() !== own.name.toLowerCase())].slice(0, 4);
+  return OVERRIDES[p.slug] ?? RAINBOW;
+}
+
+/** The swatch a product opens on: its own colour when that is one of the seven. */
+export function defaultColour(p: Pick<Product, "colour">, colours: ColourOption[]): ColourOption {
+  const own = p.colour.toLowerCase();
+  return colours.find((c) => own.startsWith(c.name.toLowerCase())) ?? colours[0];
 }
