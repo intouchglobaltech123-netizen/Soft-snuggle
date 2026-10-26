@@ -29,15 +29,14 @@ const OVERRIDES: Record<string, ColourOption[]> = {
   // ],
 };
 
-// Only the dresses are sold by colour. A gift pack already says which shades
-// it contains, and offering a single colour for a box of several would be a
-// promise the pack cannot keep, so those get no swatches at all. Anything else
-// opts in through OVERRIDES.
-const COLOURED_CATEGORIES: Product["category"][] = ["frock", "jabla"];
+// Every garment is sold in the seven colours. Gift packs are the exception:
+// a pack holds several pieces and already names the shades inside, so one
+// colour choice there would be a promise the pack cannot keep.
+const WITHOUT_COLOURS: Product["category"][] = ["gift-set"];
 
 export function coloursFor(p: Pick<Product, "slug" | "colour" | "garment" | "category">): ColourOption[] {
   if (OVERRIDES[p.slug]) return OVERRIDES[p.slug];
-  return COLOURED_CATEGORIES.includes(p.category) ? RAINBOW : [];
+  return WITHOUT_COLOURS.includes(p.category) ? [] : RAINBOW;
 }
 
 /** The swatch a product opens on: its own colour when that is one of the seven. */
