@@ -21,7 +21,7 @@ function toProduct(r: ProductRow): Product {
     organic: r.organic, sizes: r.sizes, ageGroups: r.age_groups, description: r.description,
     care: r.care, tint: r.tint, garment: r.garment, inStock: r.in_stock,
     images,
-    colours: coloursFor({ slug: r.slug, colour: r.colour, garment: r.garment }),
+    colours: coloursFor({ slug: r.slug, colour: r.colour, garment: r.garment, category: r.category }),
   };
 }
 
@@ -62,7 +62,7 @@ export async function createOrder(input: NewOrderInput) {
     const p = byId.get(i.productId);
     if (!p || !p.in_stock) throw new OrderError("One of the items in your bag is no longer available.");
     if (!p.sizes.includes(i.size)) throw new OrderError(`Size ${i.size} is not available for ${p.name}.`);
-    const options = coloursFor({ slug: p.slug, colour: p.colour, garment: p.garment });
+    const options = coloursFor({ slug: p.slug, colour: p.colour, garment: p.garment, category: p.category });
     const colour = i.colour ? options.find((c) => c.name === i.colour)?.name : undefined;
     if (i.colour && !colour) throw new OrderError(`Colour ${i.colour} is not available for ${p.name}.`);
     return { productId: p.id, name: p.name, size: i.size, ...(colour ? { colour } : {}), qty: i.qty, price: p.price };
