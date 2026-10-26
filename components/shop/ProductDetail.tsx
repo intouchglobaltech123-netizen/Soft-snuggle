@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AnimatePresence, LayoutGroup, motion, useMotionValue, useSpring, useTransform } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { defaultColour } from "@/lib/colours";
 import { isStudioShot } from "@/lib/photo";
 import { CATEGORY_LABELS, STORE, inr } from "@/lib/store";
@@ -27,6 +27,28 @@ export function ProductDetail({ product }: { product: Product }) {
   const [openPanel, setOpenPanel] = useState<string | null>("details");
   const photos = product.images;
   const [photo, setPhoto] = useState(0);
+  // The frame takes the shape of the photo inside it, so a wide gift box does
+  // not sit in a tall box with empty colour above and below it. The size is
+  // read from a detached Image rather than an onLoad handler, because a photo
+  // already in the browser cache finishes loading before React can listen.
+  const [frameRatio, setFrameRatio] = useState(0.8);
+  const current = photos[photo];
+  useEffect(() => {
+    if (!current) return;
+    let live = true;
+    const probe = new Image();
+    const measure = () => {
+      if (live && probe.naturalWidth && probe.naturalHeight) {
+        setFrameRatio(Math.min(1.6, Math.max(0.7, probe.naturalWidth / probe.naturalHeight)));
+      }
+    };
+    probe.onload = measure;
+    probe.src = current;
+    if (probe.complete) measure();
+    return () => {
+      live = false;
+    };
+  }, [current]);
 
   const pickColour = (c: (typeof product.colours)[number]) => {
     setColour(c);
@@ -70,8 +92,13 @@ export function ProductDetail({ product }: { product: Product }) {
       <div className="lg:sticky lg:top-28 lg:self-start">
         <div style={{ perspective: 1100 }}>
           <motion.div
-            className={`relative overflow-hidden rounded-[40px] ${photos.length > 0 ? "aspect-[4/5]" : "aspect-square"}`}
-            style={{ background: product.tint, rotateX, rotateY }}
+            className={`relative overflow-hidden rounded-[40px] ${photos.length > 0 ? "" : "aspect-square"}`}
+            style={{
+              background: product.tint,
+              rotateX,
+              rotateY,
+              ...(photos.length > 0 ? { aspectRatio: frameRatio } : {}),
+            }}
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -91,7 +118,7 @@ export function ProductDetail({ product }: { product: Product }) {
                   key={photos[photo]}
                   src={photos[photo]}
                   alt={product.name}
-                  className={`absolute inset-[13%] h-[74%] w-[74%] object-contain ${isStudioShot(photos[photo]) ? "mix-blend-multiply" : ""}`}
+                  className={`absolute inset-[7%] h-[86%] w-[86%] object-contain ${isStudioShot(photos[photo]) ? "mix-blend-multiply" : ""}`}
                   initial={{ opacity: 0, scale: 1.06 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
