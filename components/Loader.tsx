@@ -11,12 +11,25 @@ import { useIntro } from "./providers/IntroProvider";
 
 // Little clothes pegged along a washing line. x/y are positions on the
 // 800×260 line drawing; y follows the curve of the string.
-const LINE: { x: number; y: number; category: Category; color: string }[] = [
-  { x: 150, y: 96, category: "bodysuit", color: "#F4EEE4" },
-  { x: 275, y: 106, category: "romper", color: "#F4D9D6" },
+//
+// A `photo` hangs the real piece as a pegged print. The flat-lay photos cannot
+// simply be cut out: the garments are the same cream as the linen behind them,
+// so removing the background removes the clothes with it. If you ever have
+// proper cut-outs on a transparent background, point `photo` at those and drop
+// the rounded frame in the markup below.
+const LINE: {
+  x: number;
+  y: number;
+  category: Category;
+  color: string;
+  photo?: string;
+  tint?: string;
+}[] = [
+  { x: 150, y: 96, category: "frock", color: "#F3EBC4", photo: "/products/cherry-frock/1-front.webp", tint: "#F6EFD3" },
+  { x: 275, y: 106, category: "jabla", color: "#F3EBC4", photo: "/products/cherry-jabla/1-front.webp", tint: "#F3EBD6" },
   { x: 400, y: 110, category: "bodysuit", color: "#CFDFEC" },
-  { x: 525, y: 106, category: "romper", color: "#D9B994" },
-  { x: 650, y: 96, category: "bodysuit", color: "#C9D8C5" },
+  { x: 525, y: 106, category: "gift-set", color: "#F2D6CC", photo: "/products/day-pack/1-front.webp", tint: "#F3E9DF" },
+  { x: 650, y: 96, category: "gift-set", color: "#C4A5D1", photo: "/products/week-pack/1-front.webp", tint: "#E8E3EF" },
 ];
 
 const NOTES = ["Washing tiny socks", "Pegging the onesies", "Fluffing the cotton", "Almost dry"];
@@ -106,7 +119,16 @@ export function Loader() {
                   transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut", delay: 2 + i * 0.2 }}
                 >
                   <span className="mx-auto block h-4 w-2 -translate-y-1.5 rounded-sm bg-[#C9A27A] shadow-[inset_-1px_0_0_rgba(0,0,0,0.15)]" />
-                  <Garment category={g.category} color={g.color} className="relative -z-10 mt-[-28%] w-full" />
+                  {g.photo ? (
+                    <span
+                      className="relative -z-10 mt-[-10%] block aspect-square w-full overflow-hidden rounded-xl shadow-[0_10px_24px_-14px_rgba(38,59,54,0.5)]"
+                      style={{ background: g.tint }}
+                    >
+                      <img src={g.photo} alt="" className="h-full w-full object-cover" draggable={false} />
+                    </span>
+                  ) : (
+                    <Garment category={g.category} color={g.color} className="relative -z-10 mt-[-28%] w-full" />
+                  )}
                 </motion.div>
               </motion.div>
             ))}
