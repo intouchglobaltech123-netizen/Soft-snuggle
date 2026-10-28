@@ -8,6 +8,7 @@ import path from "node:path";
 //   public/products/<product-slug>/3.jpg  close-up (white background)
 //   public/products/<product-slug>/4.jpg  lifestyle (any background)
 //   public/hero/<collection-slug>.png     hero character (white background)
+//   public/age/<age-group-slug>.webp      real baby on a Shop by age card
 
 const IMAGE = /\.(png|jpe?g|webp|avif)$/i;
 
@@ -27,5 +28,10 @@ export function productImages(slug: string): string[] {
 
 export function heroImages(): Record<string, string> {
   return Object.fromEntries(list("hero").map((f) => [f.replace(IMAGE, ""), `/hero/${f}`]));
+}
+
+/** Photos for the Shop by age cards, keyed by age-group slug. See public/age/README.txt. */
+export function ageImages(): Record<string, string> {
+  return Object.fromEntries(list("age").map((f) => [f.replace(IMAGE, ""), `/age/${f}`]));
 }
 

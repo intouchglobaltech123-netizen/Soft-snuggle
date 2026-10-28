@@ -9,7 +9,7 @@ import { Story } from "@/components/home/Story";
 import { Reveal } from "@/components/Reveal";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { AGE_GROUPS } from "@/lib/store";
-import { heroImages } from "@/lib/images";
+import { ageImages, heroImages } from "@/lib/images";
 import { getProducts } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +26,7 @@ export default async function HomePage() {
       <Marquee />
       <Brands />
       <Statement />
-      <AgeTiles counts={counts} />
+      <AgeTiles counts={counts} photos={ageImages()} />
 
       <section id="favourites" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-32">
         <Reveal className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">

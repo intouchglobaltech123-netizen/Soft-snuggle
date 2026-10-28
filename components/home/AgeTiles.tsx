@@ -17,7 +17,14 @@ const NOTES = [
 ];
 
 /** Vertical scroll drives a horizontal ride through the age groups. */
-export function AgeTiles({ counts }: { counts: Record<string, number> }) {
+export function AgeTiles({
+  counts,
+  photos = {},
+}: {
+  counts: Record<string, number>;
+  /** Real baby photos by age-group slug; a card without one keeps its drawing. */
+  photos?: Record<string, string>;
+}) {
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [distance, setDistance] = useState(0);
@@ -79,15 +86,28 @@ export function AgeTiles({ counts }: { counts: Record<string, number> }) {
                 Shop {g.title} <span aria-hidden>→</span>
               </span>
 
-              <OutfitSwatches
-                className="relative z-20 mt-4"
-                value={outfits[i] ?? LOOKS[i].outfit}
-                onPick={(hex) => setOutfits((o) => ({ ...o, [i]: hex }))}
-              />
+              {/* Only the drawn babies can be dressed: recolouring a photo of
+                  the real garment would show a shade that is not for sale. */}
+              {!photos[g.slug] && (
+                <OutfitSwatches
+                  className="relative z-20 mt-4"
+                  value={outfits[i] ?? LOOKS[i].outfit}
+                  onPick={(hex) => setOutfits((o) => ({ ...o, [i]: hex }))}
+                />
+              )}
               {/* The baby gets whatever height is left below the button, so the two never overlap */}
               <div className="pointer-events-none -mb-4 mt-2 flex min-h-0 flex-1 items-end justify-end">
                 <div className="aspect-[220/320] h-full max-h-[300px] transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:-translate-y-3 group-hover:rotate-[-4deg]">
-                  <Baby look={{ ...LOOKS[i], outfit: outfits[i] ?? LOOKS[i].outfit }} className="h-full w-full" />
+                  {photos[g.slug] ? (
+                    <img
+                      src={photos[g.slug]}
+                      alt=""
+                      className="h-full w-full object-contain object-bottom"
+                      draggable={false}
+                    />
+                  ) : (
+                    <Baby look={{ ...LOOKS[i], outfit: outfits[i] ?? LOOKS[i].outfit }} className="h-full w-full" />
+                  )}
                 </div>
               </div>
             </Link>
