@@ -12,7 +12,7 @@ import type { ColourOption, Product } from "./types";
 // Colour names are stored with every cart item and past order, so renaming one
 // changes what old orders read. Add and remove freely; rename sparingly.
 
-const RAINBOW: ColourOption[] = [
+export const RAINBOW: ColourOption[] = [
   { name: "Cherry Red", hex: "#DE6B63" },
   { name: "Apricot Orange", hex: "#F2A86B" },
   { name: "Butter Yellow", hex: "#F3E3A3" },

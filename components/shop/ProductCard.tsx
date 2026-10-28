@@ -11,7 +11,7 @@ import { BagIcon } from "../Navbar";
 import { useCart } from "../providers/CartProvider";
 import { SaveButton } from "./SaveButton";
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product, wide = false }: { product: Product; wide?: boolean }) {
   const { add } = useCart();
   const [picking, setPicking] = useState(false);
   const [front, back] = product.images;
@@ -27,7 +27,7 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <div className="group">
       <div className="relative overflow-hidden rounded-[24px]" style={{ background: product.tint }}>
-        <Link href={`/product/${product.slug}`} className="relative block aspect-[4/5]" aria-label={product.name}>
+        <Link href={`/product/${product.slug}`} className={`relative block ${wide ? "aspect-[3/2]" : "aspect-[4/5]"}`} aria-label={product.name}>
           {front ? (
             <>
               <img

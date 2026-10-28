@@ -18,6 +18,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { COLLECTIONS, type Collection } from "@/lib/collections";
 import { Baby } from "../art/Baby";
+import { OutfitSwatches } from "../art/OutfitSwatches";
 import { FlowerMark } from "../art/FlowerMark";
 import { useIntro } from "../providers/IntroProvider";
 
@@ -48,6 +49,9 @@ export function HeroCarousel({ heroImages }: { heroImages: Record<string, string
   const reduce = useReducedMotion();
   const router = useRouter();
   const [active, setActive] = useState(0);
+  // Dresses the drawn babies. A slide showing a real photo is left alone:
+  // recolouring a photograph of the actual garment would be a lie.
+  const [outfit, setOutfit] = useState<string | null>(null);
   const [spacing, setSpacing] = useState(300);
   const paused = useRef(false);
   const holdUntil = useRef(0);
@@ -205,6 +209,7 @@ export function HeroCarousel({ heroImages }: { heroImages: Record<string, string
               pos={pos}
               spacing={spacing}
               image={heroImages[c.slug]}
+              outfit={outfit}
               onSelect={() => {
                 const d = distance(i, pos.get());
                 if (Math.abs(d) < 0.5) router.push(`/product/${c.productSlug}`);
@@ -238,6 +243,14 @@ export function HeroCarousel({ heroImages }: { heroImages: Record<string, string
             </div>
             <ArrowButton dir={1} onClick={() => step(1)} />
           </div>
+
+          {!heroImages[current.slug] && (
+            <OutfitSwatches
+              value={outfit ?? current.look.outfit}
+              onPick={setOutfit}
+              className="justify-center"
+            />
+          )}
         </motion.div>
       </motion.div>
     </section>
@@ -250,6 +263,7 @@ function GlideItem({
   pos,
   spacing,
   image,
+  outfit,
   onSelect,
 }: {
   collection: Collection;
@@ -257,6 +271,7 @@ function GlideItem({
   pos: MotionValue<number>;
   spacing: number;
   image?: string;
+  outfit?: string | null;
   onSelect: () => void;
 }) {
   const x = useTransform(pos, (p) => {
@@ -282,7 +297,7 @@ function GlideItem({
           {image ? (
             <img src={image} alt="" className="h-full w-full object-contain object-bottom mix-blend-multiply" draggable={false} />
           ) : (
-            <Baby look={collection.look} className="h-full w-full" />
+            <Baby look={outfit ? { ...collection.look, outfit } : collection.look} className="h-full w-full" />
           )}
         </motion.button>
         <motion.span

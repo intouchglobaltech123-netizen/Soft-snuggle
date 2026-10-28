@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { AGE_GROUPS } from "@/lib/store";
 import { lookFor } from "@/lib/collections";
 import { Baby } from "../art/Baby";
+import { OutfitSwatches } from "../art/OutfitSwatches";
 
 const LOOKS = [lookFor("welcome"), lookFor("cloud"), lookFor("sunday"), lookFor("wiggler")];
 const NOTES = [
@@ -20,6 +21,9 @@ export function AgeTiles({ counts }: { counts: Record<string, number> }) {
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [distance, setDistance] = useState(0);
+  // Each card dresses its own baby, so trying a colour on one leaves the
+  // others as they were.
+  const [outfits, setOutfits] = useState<Record<number, string>>({});
   const [vh, setVh] = useState(800);
 
   useEffect(() => {
@@ -74,10 +78,16 @@ export function AgeTiles({ counts }: { counts: Record<string, number> }) {
               <span className="relative z-10 mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-paper transition-all group-hover:gap-4">
                 Shop {g.title} <span aria-hidden>→</span>
               </span>
+
+              <OutfitSwatches
+                className="relative z-20 mt-4"
+                value={outfits[i] ?? LOOKS[i].outfit}
+                onPick={(hex) => setOutfits((o) => ({ ...o, [i]: hex }))}
+              />
               {/* The baby gets whatever height is left below the button, so the two never overlap */}
               <div className="pointer-events-none -mb-4 mt-2 flex min-h-0 flex-1 items-end justify-end">
                 <div className="aspect-[220/320] h-full max-h-[300px] transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:-translate-y-3 group-hover:rotate-[-4deg]">
-                  <Baby look={LOOKS[i]} className="h-full w-full" />
+                  <Baby look={{ ...LOOKS[i], outfit: outfits[i] ?? LOOKS[i].outfit }} className="h-full w-full" />
                 </div>
               </div>
             </Link>

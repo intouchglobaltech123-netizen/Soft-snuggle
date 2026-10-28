@@ -6,15 +6,13 @@ import { AGE_GROUPS } from "@/lib/store";
 import type { Product } from "@/lib/types";
 import { ProductCard } from "./ProductCard";
 import { ShopBanner } from "./ShopBanner";
+import { FlowerMark } from "../art/FlowerMark";
 
 const TABS = [
   { key: "all", label: "All" },
   { key: "frock", label: "Frocks" },
   { key: "jabla", label: "Jablas" },
-  { key: "bodysuit", label: "Bodysuits" },
-  { key: "romper", label: "Rompers" },
   { key: "gift-set", label: "Gift Sets" },
-  { key: "organic", label: "Organic Cotton" },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
@@ -32,15 +30,24 @@ export function ProductGrid({ products, initialTab, initialAge, showAgeFilter, b
   const [tab, setTab] = useState<TabKey>(TABS.some((t) => t.key === initialTab) ? (initialTab as TabKey) : "all");
   const [age, setAge] = useState<string>(initialAge ?? "all");
 
-  const visible = useMemo(
-    () =>
-      products.filter((p) => {
-        const tabOk = tab === "all" || (tab === "organic" ? p.organic : p.category === tab);
-        const ageOk = age === "all" || p.ageGroups.includes(age);
-        return tabOk && ageOk;
-      }),
-    [products, tab, age],
-  );
+  const visible = useMemo(() => {
+    const matching = products.filter((p) => {
+      const tabOk = tab === "all" || p.category === tab;
+      const ageOk = age === "all" || p.ageGroups.includes(age);
+      return tabOk && ageOk;
+    });
+    // Single pieces first, gift packs after them, so the packs fall together on
+    // their own row instead of being scattered among the clothes.
+    const isPack = (p: Product) => Number(p.category === "gift-set");
+    return [...matching].sort((a, b) => isPack(a) - isPack(b));
+  }, [products, tab, age]);
+
+  // A photo for each filter, taken from the first piece in it that has one.
+  const tabPhoto = useMemo(() => {
+    const pick = (key: TabKey) =>
+      products.find((p) => (key === "all" || p.category === key) && p.images[0])?.images[0];
+    return Object.fromEntries(TABS.map((t) => [t.key, pick(t.key)])) as Record<TabKey, string | undefined>;
+  }, [products]);
 
   return (
     <div>
@@ -51,13 +58,20 @@ export function ProductGrid({ products, initialTab, initialAge, showAgeFilter, b
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className={`relative shrink-0 rounded-full px-5 py-2.5 text-sm font-bold transition-colors ${
+              className={`relative flex shrink-0 items-center gap-2 rounded-full py-1.5 pl-1.5 pr-5 text-sm font-bold transition-colors ${
                 tab === t.key ? "text-paper" : "text-ink-soft hover:text-ink"
               }`}
             >
               {tab === t.key && (
                 <motion.span layoutId="tab-pill" className="absolute inset-0 rounded-full bg-ink" transition={{ type: "spring", stiffness: 380, damping: 32 }} />
               )}
+              <span className="relative grid h-8 w-8 shrink-0 place-items-center overflow-hidden rounded-full bg-cream">
+                {tabPhoto[t.key] ? (
+                  <img src={tabPhoto[t.key]} alt="" className="h-full w-full object-cover" loading="lazy" />
+                ) : (
+                  <FlowerMark className="h-4 w-4" />
+                )}
+              </span>
               <span className="relative">{t.label}</span>
             </button>
           ))}
@@ -87,12 +101,13 @@ export function ProductGrid({ products, initialTab, initialAge, showAgeFilter, b
             <motion.div
               key={p.id}
               layout
+              className={p.category === "gift-set" ? "col-span-2" : ""}
               initial={{ opacity: 0, y: 40, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
               transition={{ type: "spring", stiffness: 140, damping: 20, delay: Math.min(i, 8) * 0.05 }}
             >
-              <ProductCard product={p} />
+              <ProductCard product={p} wide={p.category === "gift-set"} />
             </motion.div>
           ))}
         </AnimatePresence>
