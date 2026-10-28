@@ -28,6 +28,11 @@ export function AgeTiles({
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [distance, setDistance] = useState(0);
+  // Phones get a plain stack instead of the sideways ride. Taking over the
+  // scroll works with a mouse wheel, but on a touch screen it fights the
+  // flick people already know, and the whole section ran to two and a half
+  // screens before you could get past it.
+  const [stacked, setStacked] = useState(false);
   // Each card dresses its own baby, so trying a colour on one leaves the
   // others as they were.
   const [outfits, setOutfits] = useState<Record<number, string>>({});
@@ -38,6 +43,7 @@ export function AgeTiles({
       if (!trackRef.current) return;
       setDistance(Math.max(0, trackRef.current.scrollWidth - window.innerWidth));
       setVh(window.innerHeight);
+      setStacked(window.innerWidth < 768);
     };
     measure();
     window.addEventListener("resize", measure);
@@ -48,6 +54,64 @@ export function AgeTiles({
   const rawX = useTransform(scrollYProgress, [0, 1], [0, -distance]);
   const x = useSpring(rawX, { stiffness: 120, damping: 30, mass: 0.4 });
   const bar = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+
+  const card = (g: (typeof AGE_GROUPS)[number], i: number) => ({
+    swatches: !photos[g.slug] && (
+      <OutfitSwatches
+        className="relative z-20 mt-4"
+        value={outfits[i] ?? LOOKS[i].outfit}
+        onPick={(hex) => setOutfits((o) => ({ ...o, [i]: hex }))}
+      />
+    ),
+    figure: photos[g.slug] ? (
+      <img src={photos[g.slug]} alt="" className="h-full w-full object-contain object-bottom" draggable={false} />
+    ) : (
+      <Baby look={{ ...LOOKS[i], outfit: outfits[i] ?? LOOKS[i].outfit }} className="h-full w-full" />
+    ),
+  });
+
+  if (stacked) {
+    return (
+      <section id="shop-by-age" className="px-4 py-16">
+        <p className="eyebrow">Shop by age</p>
+        <h2 className="mt-3 font-display text-4xl leading-[1.05] tracking-tight">
+          A fit for every <em className="text-sage-deep">little leap</em>
+        </h2>
+        <p className="mt-3 text-ink-soft">Comfy favourites for every new chapter.</p>
+
+        <div className="mt-7 space-y-4">
+          {AGE_GROUPS.map((g, i) => {
+            const { swatches, figure } = card(g, i);
+            return (
+              <div key={g.slug} className="overflow-hidden rounded-[28px] p-5" style={{ background: g.tint }}>
+                <div className="flex items-start gap-4">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-display text-3xl tracking-tight">{g.title}</h3>
+                      <span className="rounded-full bg-paper/70 px-2.5 py-0.5 text-[11px] font-bold">
+                        {counts[g.slug] ?? 0}
+                      </span>
+                    </div>
+                    <p className="mt-0.5 text-[11px] font-extrabold uppercase tracking-[0.18em] text-ink/60">{g.range}</p>
+                    <p className="mt-2 text-sm text-ink-soft">{NOTES[i]}</p>
+                    <Link
+                      href={`/shop?age=${g.slug}`}
+                      className="mt-4 inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-paper"
+                    >
+                      Shop {g.title} <span aria-hidden>→</span>
+                    </Link>
+                  </div>
+                  {/* The figure keeps its own column so the text never wraps around it */}
+                  <div className="aspect-[220/320] w-[29%] shrink-0 self-end">{figure}</div>
+                </div>
+                {swatches}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="shop-by-age" ref={sectionRef} className="relative" style={{ height: distance + vh }}>

@@ -52,8 +52,8 @@ export function Story() {
       {/* Testimonial */}
       <Reveal className="mx-auto mt-24 max-w-4xl text-center sm:mt-32">
         <p className="eyebrow">A little love from another mum</p>
-        <blockquote className="relative mt-6 font-display text-3xl leading-snug tracking-tight sm:text-[2.6rem]">
-          <span className="absolute -left-2 -top-10 font-display text-8xl text-peach sm:-left-10">“</span>
+        <blockquote className="relative mt-6 font-display text-2xl leading-snug tracking-tight sm:text-[2.6rem]">
+          <span className="absolute -left-1 -top-7 font-display text-6xl text-peach sm:-left-10 sm:-top-10 sm:text-8xl">“</span>
           The softest little things. My daughter practically lives in her romper, and I love knowing it&apos;s{" "}
           <em className="text-sage-deep">gentle on her skin.</em>
         </blockquote>
@@ -61,19 +61,24 @@ export function Story() {
       </Reveal>
 
       {/* Values */}
-      <div className="mt-24 grid gap-5 sm:mt-32 md:grid-cols-3">
+      <div className="mt-14 grid gap-3 sm:mt-32 sm:gap-5 md:grid-cols-3">
         {VALUES.map((v, i) => (
           <Reveal key={v.n} delay={i * 0.12}>
             <motion.div
               whileHover={{ y: -8 }}
               transition={{ type: "spring", stiffness: 260, damping: 18 }}
-              className="h-full rounded-[28px] border border-line bg-paper p-8"
+              className="h-full rounded-[28px] border border-line bg-paper p-5 sm:p-8"
             >
-              <span className="grid h-14 w-14 place-items-center rounded-2xl font-display text-xl" style={{ background: v.tint }}>
-                {v.n}
-              </span>
-              <h3 className="mt-6 font-display text-2xl tracking-tight">{v.title}</h3>
-              <p className="mt-2 text-ink-soft">{v.body}</p>
+              <div className="flex items-center gap-3 md:block">
+                <span
+                  className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl font-display text-lg sm:h-14 sm:w-14 sm:text-xl"
+                  style={{ background: v.tint }}
+                >
+                  {v.n}
+                </span>
+                <h3 className="font-display text-xl tracking-tight sm:text-2xl md:mt-6">{v.title}</h3>
+              </div>
+              <p className="mt-2 text-sm text-ink-soft sm:text-base">{v.body}</p>
             </motion.div>
           </Reveal>
         ))}

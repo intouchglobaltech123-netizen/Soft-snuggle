@@ -17,12 +17,14 @@ export function Footer() {
 
   return (
     <footer className="relative overflow-hidden border-t border-line bg-paper text-ink-soft">
-      <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center gap-5 px-6 pt-10 text-center">
-        <Logo className="h-12" />
+      <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 pt-8 text-center sm:gap-5 sm:pt-10">
+        <Logo className="h-10 sm:h-12" />
         <p className="inline-flex items-center gap-2 rounded-full bg-sage px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-ink">
           <span className="h-2 w-2 animate-pulse rounded-full bg-[#25D366]" /> 24×7 ordering available
         </p>
-        <nav className="flex flex-wrap justify-center gap-x-7 gap-y-2">
+        {/* Two even columns on a phone: the single wrapping row left an
+            awkward orphan on the second line. */}
+        <nav className="grid w-full max-w-xs grid-cols-2 gap-x-4 gap-y-3 sm:flex sm:max-w-none sm:flex-wrap sm:justify-center sm:gap-x-7 sm:gap-y-2">
           {LINKS.map((l) => (
             <Link key={l.href} href={l.href} className="text-[11px] font-bold uppercase tracking-[0.18em] transition-colors hover:text-ink">
               {l.label}
