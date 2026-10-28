@@ -49,6 +49,7 @@ export function HeroCarousel({ heroImages }: { heroImages: Record<string, string
   const router = useRouter();
   const [active, setActive] = useState(0);
   const [spacing, setSpacing] = useState(300);
+  const [compact, setCompact] = useState(false);
   const paused = useRef(false);
   const holdUntil = useRef(0);
   const speed = useRef(0);
@@ -62,7 +63,8 @@ export function HeroCarousel({ heroImages }: { heroImages: Record<string, string
     if (!el) return;
     const ro = new ResizeObserver(([entry]) => {
       const w = entry.contentRect.width;
-      setSpacing(w < 640 ? w * 0.34 : Math.min(w * 0.21, 330));
+      setSpacing(w < 640 ? w * 0.52 : Math.min(w * 0.21, 330));
+      setCompact(w < 640);
     });
     ro.observe(el);
     return () => ro.disconnect();
@@ -132,7 +134,7 @@ export function HeroCarousel({ heroImages }: { heroImages: Record<string, string
       />
 
       {/* Giant collection word drifting behind */}
-      <div className="pointer-events-none absolute inset-x-0 top-[17%] flex justify-center overflow-hidden">
+      <div className="pointer-events-none absolute inset-x-0 top-[44%] flex justify-center overflow-hidden md:top-[17%]">
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.p
             key={current.slug}
@@ -205,6 +207,7 @@ export function HeroCarousel({ heroImages }: { heroImages: Record<string, string
               pos={pos}
               spacing={spacing}
               image={heroImages[c.slug]}
+              compact={compact}
               onSelect={() => {
                 const d = distance(i, pos.get());
                 if (Math.abs(d) < 0.5) router.push(`/product/${c.productSlug}`);
@@ -251,6 +254,7 @@ function GlideItem({
   pos,
   spacing,
   image,
+  compact,
   onSelect,
 }: {
   collection: Collection;
@@ -258,6 +262,7 @@ function GlideItem({
   pos: MotionValue<number>;
   spacing: number;
   image?: string;
+  compact: boolean;
   onSelect: () => void;
 }) {
   const x = useTransform(pos, (p) => {
@@ -266,7 +271,11 @@ function GlideItem({
     return Math.sign(d) * (Math.min(a, 1) * spacing + Math.max(a - 1, 0) * spacing * 0.78);
   });
   const scale = useTransform(pos, (p) => lerp(Math.abs(distance(index, p)), [0, 1, 2, 3], [1, 0.58, 0.42, 0.32]));
-  const opacity = useTransform(pos, (p) => lerp(Math.abs(distance(index, p)), [0, 1.6, 2.4], [1, 0.9, 0]));
+  // Neighbours fade out faster on a phone, where they would otherwise crowd
+  // the piece being looked at.
+  const opacity = useTransform(pos, (p) =>
+    lerp(Math.abs(distance(index, p)), compact ? [0, 0.6, 1.1] : [0, 1.6, 2.4], [1, 0.45, 0]),
+  );
   const labelOpacity = useTransform(pos, (p) => lerp(Math.abs(distance(index, p)), [0, 1.15, 1.6], [1, 1, 0]));
   const zIndex = useTransform(pos, (p) => Math.round(100 - Math.abs(distance(index, p)) * 10));
 

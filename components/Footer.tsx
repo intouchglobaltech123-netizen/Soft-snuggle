@@ -53,11 +53,13 @@ export function Footer() {
       </div>
 
       {/* Big soft logo watermark */}
-      <div aria-hidden="true" className="pointer-events-none mt-6 flex justify-center px-4 opacity-[0.16]">
+      <div aria-hidden="true" className="pointer-events-none mt-6 hidden justify-center px-4 opacity-[0.16] sm:flex">
         <img src="/logo.webp" alt="" className="w-full max-w-4xl" draggable={false} />
       </div>
 
-      <div className="relative z-10 border-t border-line/70 py-4 text-center text-xs">
+      {/* Room below on phones so the floating WhatsApp button has somewhere to
+          sit without covering the line. */}
+      <div className="relative z-10 border-t border-line/70 px-4 pb-20 pt-4 text-center text-xs sm:pb-4">
         © {new Date().getFullYear()} Soft Snuggle · Little clothes, lots of love
       </div>
     </footer>

@@ -74,7 +74,7 @@ export function Loader() {
           transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
         >
           {/* Washing line */}
-          <div className="relative aspect-[800/260] w-[min(96vw,920px)]">
+          <div className="relative aspect-[800/260] w-[min(132vw,920px)]">
             <svg viewBox="0 0 800 260" className="absolute inset-0 h-full w-full overflow-visible" aria-hidden="true">
               <motion.path
                 d="M -60 66 Q 400 154 860 66"
