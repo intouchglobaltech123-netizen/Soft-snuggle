@@ -12,8 +12,11 @@ export interface Collection {
   look: BabyLook;
 }
 
-// One character per hero slide. Swap `look` for a 3D render later.
-// A photo in public/hero/<slug>.(png|webp) replaces the illustration for that slide.
+// One slide per piece in the shop. Every productSlug here must exist in
+// lib/seed.ts: a slide pointing at a retired piece sends shoppers to a missing
+// page, which is how the demo catalogue used to break this hero.
+//
+// A photo at public/hero/<slug>.(png|webp) replaces the drawing for that slide.
 export const COLLECTIONS: Collection[] = [
   {
     // Shown with the real photo in public/hero/cherry.webp. The look below is
@@ -32,84 +35,42 @@ export const COLLECTIONS: Collection[] = [
     },
   },
   {
-    slug: "everyday",
-    productSlug: "everyday-bodysuit",
-    eyebrow: "Bestseller",
-    title: "Everyday",
-    accent: "Edit",
-    label: "Everyday Bodysuit",
-    blurb: "Envelope shoulders, nickel-free snaps and organic cotton that gets softer every wash.",
-    glow: "#DFE7DD",
+    slug: "jabla",
+    productSlug: "cherry-jabla",
+    eyebrow: "New in",
+    title: "Cherry",
+    accent: "Jabla",
+    label: "Cherry Bloom Jabla",
+    blurb: "A sleeveless muslin jabla with snaps all the way down, for dressing a wriggly baby in seconds.",
+    glow: "#F3EBD6",
     look: {
       skin: "#F3CDB0", hair: "#6B4A36", hairStyle: "tuft", outfit: "#F1E8DA",
       kind: "bodysuit", detail: "dots", accessory: "none", prop: "teddy",
     },
   },
   {
-    slug: "sunday",
-    productSlug: "sunday-morning-romper",
-    eyebrow: "New in",
-    title: "Sunday",
-    accent: "Mornings",
-    label: "Sunday Romper",
-    blurb: "A roomy, breezy romper with a full snap front for slow mornings and pancake crumbs.",
-    glow: "#F3D8C8",
-    look: {
-      skin: "#D9A47F", hair: "#2F2420", hairStyle: "curls", outfit: "#D9B994",
-      kind: "romper", detail: "heart", accessory: "beanie", accessoryColor: "#B7CCBE", prop: "none",
-    },
-  },
-  {
-    slug: "bloom",
-    productSlug: "little-bloom-bodysuit",
-    eyebrow: "Organic cotton",
-    title: "Little",
-    accent: "Bloom",
-    label: "Little Bloom",
-    blurb: "A tiny garden of embroidered blooms, with flat seams and tagless necks so nothing scratches.",
-    glow: "#E6EDE1",
+    slug: "day-pack",
+    productSlug: "day-pack",
+    eyebrow: "Gift ready",
+    title: "Day",
+    accent: "Pack",
+    label: "The Day Pack",
+    blurb: "Three pieces in the rainbow shades of your choice, tied with a ribbon and ready to give.",
+    glow: "#F3E9DF",
     look: {
       skin: "#B97F5C", hair: "#24190F", hairStyle: "curls", outfit: "#C9D8C5",
       kind: "bodysuit", detail: "flower", accessory: "bow", accessoryColor: "#E6A99D", prop: "none",
     },
   },
   {
-    slug: "cloud",
-    productSlug: "cloud-nine-bodysuit",
-    eyebrow: "Dreamy & light",
-    title: "Cloud",
-    accent: "Nine",
-    label: "Cloud Nine",
-    blurb: "Sky-blue organic cotton with little cloud embroidery. It feels as light as it looks.",
-    glow: "#DCE6EE",
-    look: {
-      skin: "#F6D5BE", hair: "#B98955", hairStyle: "none", outfit: "#CFDFEC",
-      kind: "bodysuit", detail: "cloud", accessory: "bunny", accessoryColor: "#F7F1E8", prop: "star",
-    },
-  },
-  {
-    slug: "wiggler",
-    productSlug: "wiggler-romper",
-    eyebrow: "For crawlers",
-    title: "The",
-    accent: "Wiggler",
-    label: "Wiggler Romper",
-    blurb: "Stretchy jersey that keeps up with crawlers, cruisers and brave first steps.",
-    glow: "#F1E7BC",
-    look: {
-      skin: "#E8B996", hair: "#4A3121", hairStyle: "tuft", outfit: "#B7CCBE",
-      kind: "romper", detail: "star", accessory: "none", prop: "teddy",
-    },
-  },
-  {
-    slug: "welcome",
-    productSlug: "welcome-home-set",
-    eyebrow: "Gift ready",
-    title: "Welcome",
-    accent: "Home",
-    label: "Welcome Home Set",
-    blurb: "A bodysuit, knotted bonnet and swaddle in a keepsake box, ready for the first ride home.",
-    glow: "#F3E5E4",
+    slug: "week-pack",
+    productSlug: "week-pack",
+    eyebrow: "Best value",
+    title: "Week",
+    accent: "Pack",
+    label: "The Week Pack",
+    blurb: "All seven rainbow shades, one for every day of the week, boxed and ready to give.",
+    glow: "#E8E3EF",
     look: {
       skin: "#C68E6B", hair: "#2F2420", hairStyle: "none", outfit: "#F4D9D6",
       kind: "bodysuit", detail: "dots", accessory: "bonnet", accessoryColor: "#CFDCCB", prop: "star",
@@ -117,5 +78,26 @@ export const COLLECTIONS: Collection[] = [
   },
 ];
 
-/** A character's look by collection slug, so other sections don't depend on slide order. */
 export const lookFor = (slug: string) => (COLLECTIONS.find((c) => c.slug === slug) ?? COLLECTIONS[0]).look;
+
+// The four shop-by-age cards. Kept separate from the slides above so that
+// retiring a piece changes the hero without leaving every age card showing the
+// same baby.
+export const AGE_LOOKS: BabyLook[] = [
+  {
+      skin: "#F3CDB0", hair: "#6B4A36", hairStyle: "tuft", outfit: "#F1E8DA",
+      kind: "bodysuit", detail: "dots", accessory: "none", prop: "teddy",
+  },
+  {
+      skin: "#C68E6B", hair: "#2F2420", hairStyle: "none", outfit: "#F4D9D6",
+      kind: "bodysuit", detail: "dots", accessory: "bonnet", accessoryColor: "#CFDCCB", prop: "star",
+  },
+  {
+      skin: "#F6D5BE", hair: "#B98955", hairStyle: "none", outfit: "#CFDFEC",
+      kind: "bodysuit", detail: "cloud", accessory: "bunny", accessoryColor: "#F7F1E8", prop: "star",
+  },
+  {
+      skin: "#D9A47F", hair: "#2F2420", hairStyle: "curls", outfit: "#D9B994",
+      kind: "romper", detail: "heart", accessory: "beanie", accessoryColor: "#B7CCBE", prop: "none",
+  },
+];

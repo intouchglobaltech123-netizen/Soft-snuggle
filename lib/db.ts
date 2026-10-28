@@ -11,7 +11,7 @@ export interface Db {
 // Bump this whenever SCHEMA_SQL changes. The connection below outlives a code
 // reload, so without a version the new schema is never applied to it and the
 // site keeps failing until someone restarts the server by hand.
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 
 // Survives hot reloads in dev so we never open the database twice.
 const globalForDb = globalThis as unknown as {
@@ -105,10 +105,13 @@ function selfHealing(db: Db): Db {
 // the ones already there. Without it a live database keeps its first-ever
 // catalogue for good and never sees a new product.
 //
-// Two things are deliberately left alone, because the owner changes them in the
-// database and the seed file knows nothing about them:
-//   * in_stock — so a sold-out piece stays sold out across a deploy.
-//   * products whose slug is no longer in the file — removed by hand if wanted.
+// A product taken out of the file is taken out of the shop, so removing a line
+// is enough to retire a piece. Past orders are unaffected: each order stores
+// its own copy of what was bought, name and price included.
+//
+// in_stock is the one thing left alone, since the owner sets it in the
+// database and the seed file knows nothing about it: a sold-out piece stays
+// sold out across a deploy.
 async function syncCatalogue(db: Db) {
   for (const [i, p] of SEED_PRODUCTS.entries()) {
     await db.query(
@@ -139,6 +142,8 @@ async function syncCatalogue(db: Db) {
       ],
     );
   }
+
+  await db.query("DELETE FROM products WHERE slug <> ALL($1::text[])", [SEED_PRODUCTS.map((p) => p.slug)]);
 }
 
 export function getDb(): Promise<Db> {
