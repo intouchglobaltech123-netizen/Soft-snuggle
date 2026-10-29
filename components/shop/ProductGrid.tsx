@@ -12,6 +12,7 @@ const TABS = [
   { key: "all", label: "All" },
   { key: "frock", label: "Frocks" },
   { key: "jabla", label: "Jablas" },
+  { key: "nappy", label: "Nappies" },
   { key: "gift-set", label: "Gift Sets" },
 ] as const;
 

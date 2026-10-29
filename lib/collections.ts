@@ -77,6 +77,20 @@ export const COLLECTIONS: Collection[] = [
     },
   },
   {
+    slug: "butterfly",
+    productSlug: "butterfly-nappy",
+    eyebrow: "New in",
+    title: "Butterfly",
+    accent: "Flutter",
+    label: "Butterfly Flutter Nappy",
+    blurb: "A tie-up muslin nappy scattered with butterflies and hearts, with long ties for a fit you set yourself.",
+    glow: "#F6EFE6",
+    look: {
+      skin: "#F6D5BE", hair: "#B98955", hairStyle: "tuft", outfit: "#F7F3EA",
+      kind: "bodysuit", detail: "flower", accessory: "bow", accessoryColor: "#E86A9B", prop: "none",
+    },
+  },
+  {
     slug: "day-pack",
     productSlug: "day-pack",
     eyebrow: "Gift ready",

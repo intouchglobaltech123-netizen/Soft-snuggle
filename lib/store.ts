@@ -19,6 +19,7 @@ export const AGE_GROUPS = [
 export const CATEGORY_LABELS = {
   frock: "Frocks",
   jabla: "Jablas",
+  nappy: "Nappies",
   bodysuit: "Bodysuits",
   romper: "Rompers",
   "gift-set": "Gift Sets",

@@ -1,4 +1,4 @@
-export type Category = "frock" | "jabla" | "bodysuit" | "romper" | "gift-set";
+export type Category = "frock" | "jabla" | "nappy" | "bodysuit" | "romper" | "gift-set";
 
 export interface ColourOption {
   name: string;

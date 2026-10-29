@@ -99,6 +99,22 @@ const RAW: Omit<SeedProduct, "ageGroups">[] = [
     garment: "#F6F3EC",
   },
   {
+    slug: "butterfly-nappy",
+    name: "Butterfly Flutter Nappy",
+    category: "nappy",
+    fabric: "50% bamboo, 50% cotton",
+    colour: "Ivory, butterfly print",
+    price: 199,
+    badge: "New",
+    organic: false,
+    sizes: CHART_SIZES,
+    description:
+      "A tie-up muslin nappy, printed with little butterflies and hearts. Long side ties let you set the fit exactly where it is comfortable, and the open shape dries quickly after a wash.",
+    care: "Hand wash or gentle machine wash cold. Dry in shade. Do not bleach.",
+    tint: "#F6EFE6",
+    garment: "#F7F3EA",
+  },
+  {
     slug: "day-pack",
     name: "The Day Pack",
     category: "gift-set",
