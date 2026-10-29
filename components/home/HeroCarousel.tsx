@@ -70,19 +70,32 @@ export function HeroCarousel({ heroImages }: { heroImages: Record<string, string
     if (!el) return;
     const ro = new ResizeObserver(([entry]) => {
       const w = entry.contentRect.width;
-      setSpacing(w < 640 ? w * 0.52 : Math.min(w * 0.21, 330));
+      setSpacing(w < 640 ? w * 0.72 : Math.min(w * 0.21, 330));
       setCompact(w < 640);
     });
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
 
-  // Endless drift: ease the speed towards the target so pausing feels soft.
+  // Endless drift on a wide screen, where the characters read as a parade
+  // passing by. A phone shows one at a time, so a constant drift means the
+  // piece being looked at is almost never centred and is cropped at the edge
+  // half the time. There it steps from one to the next and rests on each.
   useAnimationFrame((time, delta) => {
+    if (compact) return;
     const goal = !ready || reduce || paused.current || performance.now() < holdUntil.current ? 0 : GLIDE_SPEED;
     speed.current += (goal - speed.current) * Math.min(1, delta / 450);
     if (Math.abs(speed.current) > 0.0005) pos.set(pos.get() + (speed.current * delta) / 1000);
   });
+
+  useEffect(() => {
+    if (!compact || !ready || reduce) return;
+    const id = setInterval(() => {
+      if (paused.current || performance.now() < holdUntil.current) return;
+      stepRef.current(1);
+    }, 4200);
+    return () => clearInterval(id);
+  }, [compact, ready, reduce]);
 
   useMotionValueEvent(pos, "change", (p) => {
     const idx = ((Math.round(p) % N) + N) % N;
@@ -145,7 +158,7 @@ export function HeroCarousel({ heroImages }: { heroImages: Record<string, string
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.p
             key={current.slug}
-            className="whitespace-nowrap font-display text-[22vw] leading-none tracking-tighter text-ink/[0.05] lg:text-[16vw]"
+            className="whitespace-nowrap font-display text-[13vw] leading-none tracking-tighter text-ink/[0.05] sm:text-[22vw] lg:text-[16vw]"
             initial={{ x: 160, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -160, opacity: 0 }}
@@ -160,9 +173,13 @@ export function HeroCarousel({ heroImages }: { heroImages: Record<string, string
       <motion.div className="pointer-events-none absolute inset-0" style={{ x: floatX, y: floatY }}>
         {[
           ["7%", "30%", "#E6A99D", 0], ["90%", "24%", "#7F9C88", 1.2], ["80%", "74%", "#F1D47A", 0.6],
-          ["14%", "80%", "#B7CCBE", 2], ["54%", "15%", "#D6B595", 1.6], ["30%", "20%", "#CFDFEC", 0.3],
-        ].map(([left, top, color, delay]) => (
-          <div key={`${left}${top}`} className="anim-float absolute" style={{ left: left as string, top: top as string, animationDelay: `${delay}s` }}>
+          ["14%", "80%", "#B7CCBE", 2, true], ["54%", "15%", "#D6B595", 1.6, false], ["30%", "20%", "#CFDFEC", 0.3, false],
+        ].map(([left, top, color, delay, onPhone]) => (
+          <div
+            key={`${left}${top}`}
+            className={`anim-float absolute ${onPhone === false ? "hidden sm:block" : ""}`}
+            style={{ left: left as string, top: top as string, animationDelay: `${delay}s` }}
+          >
             <FlowerMark className="h-5 w-5 opacity-70" petal={color as string} center="#FDFBF6" />
           </div>
         ))}
@@ -284,7 +301,7 @@ function GlideItem({
   // Neighbours fade out faster on a phone, where they would otherwise crowd
   // the piece being looked at.
   const opacity = useTransform(pos, (p) =>
-    lerp(Math.abs(distance(index, p, count)), compact ? [0, 0.6, 1.1] : [0, 1.6, 2.4], [1, 0.45, 0]),
+    lerp(Math.abs(distance(index, p, count)), compact ? [0, 0.4, 0.8] : [0, 1.6, 2.4], [1, 0.3, 0]),
   );
   const labelOpacity = useTransform(pos, (p) => lerp(Math.abs(distance(index, p, count)), [0, 1.15, 1.6], [1, 1, 0]));
   const zIndex = useTransform(pos, (p) => Math.round(100 - Math.abs(distance(index, p, count)) * 10));
