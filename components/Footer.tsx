@@ -15,6 +15,28 @@ const LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
+// Grouped headings for the phone footer: a flat list of six links gave no
+// clue which were for buying and which were the small print. Wide screens
+// keep the original centred row.
+const COLUMNS = [
+  {
+    heading: "Shop",
+    links: [
+      { href: "/shop", label: "All pieces" },
+      { href: "/track", label: "Track order" },
+      { href: "/contact", label: "Contact us" },
+    ],
+  },
+  {
+    heading: "Help",
+    links: [
+      { href: "/policies/shipping", label: "Shipping" },
+      { href: "/policies/returns", label: "Returns & exchanges" },
+      { href: "/policies/privacy", label: "Privacy" },
+    ],
+  },
+];
+
 export function Footer() {
   // The contact page is a single phone screen by design; a footer under it
   // would both make it scroll and repeat the same links twice on one screen.
@@ -29,9 +51,25 @@ export function Footer() {
         <p className="inline-flex items-center gap-2 rounded-full bg-sage px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-ink">
           <span className="h-2 w-2 animate-pulse rounded-full bg-[#25D366]" /> 24×7 ordering available
         </p>
-        {/* Two even columns on a phone: the single wrapping row left an
-            awkward orphan on the second line. */}
-        <nav className="grid w-full max-w-xs grid-cols-2 gap-x-4 gap-y-3 sm:flex sm:max-w-none sm:flex-wrap sm:justify-center sm:gap-x-7 sm:gap-y-2">
+        {/* Phones get the two headed columns; wide screens keep the flat
+            centred row this footer has always had. */}
+        <div className="grid w-full grid-cols-2 gap-6 px-2 text-left sm:hidden">
+          {COLUMNS.map((col) => (
+            <nav key={col.heading}>
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-ink">{col.heading}</p>
+              <ul className="mt-2.5 space-y-2">
+                {col.links.map((l) => (
+                  <li key={l.href}>
+                    <Link href={l.href} className="text-sm transition-colors hover:text-ink">
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+        </div>
+        <nav className="hidden sm:flex sm:flex-wrap sm:justify-center sm:gap-x-7 sm:gap-y-2">
           {LINKS.map((l) => (
             <Link key={l.href} href={l.href} className="text-[11px] font-bold uppercase tracking-[0.18em] transition-colors hover:text-ink">
               {l.label}
