@@ -119,6 +119,20 @@ export const COLLECTIONS: Collection[] = [
     },
   },
   {
+    slug: "peaks",
+    productSlug: "peaks-frock",
+    eyebrow: "New in",
+    title: "Tiny",
+    accent: "Peaks",
+    label: "Tiny Peaks Frock",
+    blurb: "Little brown triangles across white muslin, with flutter sleeves and buttons all the way down.",
+    glow: "#F4EFE6",
+    look: {
+      skin: "#D9A47F", hair: "#3A2A1E", hairStyle: "curls", outfit: "#FBF9F4",
+      kind: "bodysuit", detail: "heart", accessory: "bow", accessoryColor: "#C9A27A", prop: "none",
+    },
+  },
+  {
     slug: "day-pack",
     productSlug: "day-pack",
     eyebrow: "Gift ready",

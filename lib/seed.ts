@@ -147,6 +147,22 @@ const RAW: Omit<SeedProduct, "ageGroups">[] = [
     garment: "#F8FAFC",
   },
   {
+    slug: "peaks-frock",
+    name: "Tiny Peaks Frock",
+    category: "frock",
+    fabric: "50% bamboo, 50% cotton",
+    colour: "White, brown and tan triangles",
+    price: 349,
+    badge: "New",
+    organic: false,
+    sizes: CHART_SIZES,
+    description:
+      "A white muslin frock scattered with little brown and tan triangles, stacked like tiny hills. Flutter sleeves over the shoulders, buttons the whole way down the front and a gathered waist that gives the skirt its swing.",
+    care: "Hand wash or gentle machine wash cold. Dry in shade. Do not bleach.",
+    tint: "#F4EFE6",
+    garment: "#FBF9F4",
+  },
+  {
     slug: "day-pack",
     name: "The Day Pack",
     category: "gift-set",
