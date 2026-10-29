@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { STORE } from "@/lib/store";
 import { Logo } from "./art/Logo";
-import { WhatsAppIcon } from "@/components/art/WhatsAppIcon";
+import { WhatsAppIcon } from "./WhatsAppFab";
 
 const LINKS = [
   { href: "/shop", label: "Shop" },
@@ -59,7 +59,9 @@ export function Footer() {
         <img src="/logo.webp" alt="" className="w-full max-w-4xl" draggable={false} />
       </div>
 
-      <div className="relative z-10 border-t border-line/70 px-4 py-4 text-center text-xs">
+      {/* Room below on phones so the floating WhatsApp button has somewhere to
+          sit without covering the line. */}
+      <div className="relative z-10 border-t border-line/70 px-4 pb-20 pt-4 text-center text-xs sm:pb-4">
         © {new Date().getFullYear()} Soft Snuggle · Little clothes, lots of love
       </div>
     </footer>

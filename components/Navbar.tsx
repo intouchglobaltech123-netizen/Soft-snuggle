@@ -7,7 +7,7 @@ import { useLenis } from "lenis/react";
 import { useEffect, useRef, useState } from "react";
 import { STORE, inr } from "@/lib/store";
 import { Logo } from "./art/Logo";
-import { WhatsAppIcon } from "@/components/art/WhatsAppIcon";
+import { WhatsAppIcon } from "./WhatsAppFab";
 import { useAccount } from "./providers/AccountProvider";
 import { useCart } from "./providers/CartProvider";
 

@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useState } from "react";
 import { STORE, inr } from "@/lib/store";
 import { TRACK_STEPS, type TrackInfo } from "@/lib/tracking";
-import { WhatsAppIcon } from "@/components/art/WhatsAppIcon";
+import { WhatsAppIcon } from "../WhatsAppFab";
 import { useAccount } from "../providers/AccountProvider";
 
 const fmt = (d: string | null) =>

@@ -7,7 +7,7 @@ import { inr } from "@/lib/store";
 import type { Order } from "@/lib/types";
 import { orderMessage, whatsappLink } from "@/lib/whatsapp";
 import { FlowerMark } from "../art/FlowerMark";
-import { WhatsAppIcon } from "@/components/art/WhatsAppIcon";
+import { WhatsAppIcon } from "../WhatsAppFab";
 
 interface Props {
   order: Order;
