@@ -4,7 +4,6 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { Footer } from "@/components/Footer";
 import { Loader } from "@/components/Loader";
 import { Navbar } from "@/components/Navbar";
-import { WhatsAppFab } from "@/components/WhatsAppFab";
 import { AccountProvider } from "@/components/providers/AccountProvider";
 import { CartProvider } from "@/components/providers/CartProvider";
 import { IntroProvider } from "@/components/providers/IntroProvider";
@@ -49,7 +48,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <main>{children}</main>
               <Footer />
               <CartDrawer />
-              <WhatsAppFab />
               </CartProvider>
             </AccountProvider>
           </IntroProvider>

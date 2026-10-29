@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { FlowerMark } from "@/components/art/FlowerMark";
 import { Reveal } from "@/components/Reveal";
-import { WhatsAppIcon } from "@/components/WhatsAppFab";
+import { WhatsAppIcon } from "@/components/art/WhatsAppIcon";
 import { STORE } from "@/lib/store";
 
 export const metadata: Metadata = { title: "Contact" };
