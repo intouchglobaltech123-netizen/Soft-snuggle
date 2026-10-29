@@ -30,6 +30,13 @@ export function heroImages(): Record<string, string> {
   return Object.fromEntries(list("hero").map((f) => [f.replace(IMAGE, ""), `/hero/${f}`]));
 }
 
+/** The cut-out beside "Made with love" on the home page, if one has been added.
+ *  Any image in public/story is used; without one the section keeps its drawing. */
+export function storyImage(): string | undefined {
+  const [first] = list("story");
+  return first ? `/story/${first}` : undefined;
+}
+
 /** Photos for the Shop by age cards, keyed by age-group slug. See public/age/README.txt. */
 export function ageImages(): Record<string, string> {
   return Object.fromEntries(list("age").map((f) => [f.replace(IMAGE, ""), `/age/${f}`]));

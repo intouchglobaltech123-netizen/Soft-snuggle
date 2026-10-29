@@ -9,7 +9,7 @@ import { Story } from "@/components/home/Story";
 import { Reveal } from "@/components/Reveal";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { AGE_GROUPS } from "@/lib/store";
-import { ageImages, heroImages } from "@/lib/images";
+import { ageImages, heroImages, storyImage } from "@/lib/images";
 import { getProducts } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
@@ -44,7 +44,7 @@ export default async function HomePage() {
         <ProductGrid products={products} />
       </section>
 
-      <Story />
+      <Story photo={storyImage()} />
       <Newsletter />
     </>
   );

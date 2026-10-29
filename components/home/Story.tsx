@@ -13,7 +13,7 @@ const VALUES = [
   { n: "03", title: "Made to pass along", body: "Thoughtful quality for keeping and sharing.", tint: "#DCE6EE" },
 ];
 
-export function Story() {
+export function Story({ photo }: { photo?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const babyY = useTransform(scrollYProgress, [0, 1], [80, -80]);
@@ -39,7 +39,11 @@ export function Story() {
         <div className="relative h-[420px] lg:h-auto lg:min-h-[560px]">
           <motion.div className="absolute bottom-10 left-1/2 h-[46%] w-[78%] -translate-x-1/2 rounded-[50%] bg-[#C5D4C3]" style={{ y: cloudY }} />
           <motion.div className="absolute bottom-16 left-1/2 aspect-[220/320] h-[78%] -translate-x-1/2" style={{ y: babyY, rotate }}>
-            <Baby look={lookFor("bloom")} className="h-full w-full" />
+            {photo ? (
+              <img src={photo} alt="" className="h-full w-full object-contain object-bottom" draggable={false} />
+            ) : (
+              <Baby look={lookFor("bloom")} className="h-full w-full" />
+            )}
           </motion.div>
           {[["12%", "18%"], ["78%", "26%"], ["70%", "70%"]].map(([l, t], i) => (
             <div key={i} className="anim-float absolute" style={{ left: l, top: t, animationDelay: `${i * 0.8}s` }}>
