@@ -14,7 +14,7 @@ import { SaveButton } from "./SaveButton";
 export function ProductCard({ product, wide = false }: { product: Product; wide?: boolean }) {
   const { add } = useCart();
   const [picking, setPicking] = useState(false);
-  const [front, back] = product.images;
+  const [front] = product.images;
 
   const addSize = (size: string) => {
     add({
@@ -30,24 +30,16 @@ export function ProductCard({ product, wide = false }: { product: Product; wide?
         <Link href={`/product/${product.slug}`} className={`relative block ${wide ? "aspect-[3/2]" : "aspect-[4/5]"}`} aria-label={product.name}>
           {front ? (
             <>
+              {/* The card holds still under the cursor: no swap to the back
+                  view, no zoom. The back photo is on the product page. */}
               <img
                 src={front}
                 alt={product.name}
                 loading="lazy"
-                className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-105 ${
+                className={`absolute inset-0 h-full w-full object-cover ${
                   isStudioShot(front) ? "mix-blend-multiply" : ""
-                } ${back ? "group-hover:opacity-0" : ""}`}
+                }`}
               />
-              {back && (
-                <img
-                  src={back}
-                  alt=""
-                  loading="lazy"
-                  className={`absolute inset-0 h-full w-full scale-105 object-cover opacity-0 transition-all duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-100 group-hover:opacity-100 ${
-                    isStudioShot(back) ? "mix-blend-multiply" : ""
-                  }`}
-                />
-              )}
             </>
           ) : (
             <>

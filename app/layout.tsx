@@ -8,6 +8,19 @@ import { AccountProvider } from "@/components/providers/AccountProvider";
 import { CartProvider } from "@/components/providers/CartProvider";
 import { IntroProvider } from "@/components/providers/IntroProvider";
 import { SmoothScroll } from "@/components/providers/SmoothScroll";
+import { garmentCutouts } from "@/lib/images";
+
+// Five garments for the washing line, spread across the catalogue rather than
+// five of the same print. Cut-outs only, so nothing arrives with a backdrop.
+function LINE_GARMENTS() {
+  const all = Object.entries(garmentCutouts()).sort(([a], [b]) => a.localeCompare(b));
+  const seen = new Set<string>();
+  const varied = all.filter(([slug]) => {
+    const family = slug.split("-")[0];
+    return !seen.has(family) && seen.add(family);
+  });
+  return [...varied, ...all.filter((e) => !varied.includes(e))].slice(0, 5).map(([, url]) => url);
+}
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -43,7 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <IntroProvider>
             <AccountProvider>
               <CartProvider>
-              <Loader />
+              <Loader garments={LINE_GARMENTS()} />
               <Navbar />
               <main>{children}</main>
               <Footer />

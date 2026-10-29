@@ -21,7 +21,7 @@ const LINE: { x: number; y: number; category: Category; color: string }[] = [
 
 const NOTES = ["Washing tiny socks", "Pegging the onesies", "Fluffing the cotton", "Almost dry"];
 
-export function Loader() {
+export function Loader({ garments = [] }: { garments?: string[] }) {
   const { setReady } = useIntro();
   const lenis = useLenis();
   // The intro only plays when someone lands on the home page.
@@ -87,10 +87,12 @@ export function Loader() {
                 transition={{ duration: 0.8, ease: [0.65, 0, 0.35, 1] }}
               />
             </svg>
-            {LINE.map((g, i) => (
+            {LINE.map((g, i) => {
+              const photo = garments[i % Math.max(1, garments.length)];
+              return (
               <motion.div
                 key={i}
-                className="absolute w-[18%] origin-top"
+                className="absolute w-[21%] origin-top"
                 style={{ left: `${(g.x / 800) * 100}%`, top: `${(g.y / 260) * 100}%`, x: "-50%" }}
                 initial={{ y: -420, rotate: -25 }}
                 animate={{ y: 0, rotate: [-25, 14, -8, 5, -2, 0] }}
@@ -106,10 +108,24 @@ export function Loader() {
                   transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut", delay: 2 + i * 0.2 }}
                 >
                   <span className="mx-auto block h-4 w-2 -translate-y-1.5 rounded-sm bg-[#C9A27A] shadow-[inset_-1px_0_0_rgba(0,0,0,0.15)]" />
-                  <Garment category={g.category} color={g.color} className="relative -z-10 mt-[-28%] w-full" />
+                  {photo ? (
+                    // An aspect box keeps every photographed garment the same
+                    // footprint on the line, whatever shape it was cut to.
+                    <div className="relative -z-10 mt-[-10%] aspect-[3/4] w-full">
+                      <img
+                        src={photo}
+                        alt=""
+                        draggable={false}
+                        className="h-full w-full object-contain object-top [filter:drop-shadow(0_8px_10px_rgba(60,50,40,0.18))]"
+                      />
+                    </div>
+                  ) : (
+                    <Garment category={g.category} color={g.color} className="relative -z-10 mt-[-28%] w-full" />
+                  )}
                 </motion.div>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
 
           <motion.div
