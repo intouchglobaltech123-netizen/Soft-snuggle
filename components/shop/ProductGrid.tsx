@@ -51,9 +51,21 @@ export function ProductGrid({ products, initialTab, initialAge, showAgeFilter, b
     return Object.fromEntries(TABS.map((t) => [t.key, pick(t.key)])) as Record<TabKey, string | undefined>;
   }, [products]);
 
+  // Three real garments for the banner. Gift sets are left out: the banner
+  // wants clothes, not a box.
+  const bannerPhotos = useMemo(
+    () =>
+      products
+        .filter((p) => p.category !== "gift-set" && p.images[0])
+        .filter((p) => tab === "all" || tab === "gift-set" || p.category === tab)
+        .slice(0, 3)
+        .map((p) => p.images[0]),
+    [products, tab],
+  );
+
   return (
     <div>
-      {banner && <ShopBanner tab={tab} age={age} />}
+      {banner && <ShopBanner tab={tab} age={age} photos={bannerPhotos} />}
       <LayoutGroup id="tabs">
         <div className="no-scrollbar -mx-6 flex gap-2 overflow-x-auto px-6 pb-2">
           {TABS.map((t) => (

@@ -11,7 +11,7 @@ const BANNERS: Record<string, { eyebrow: string; title: string; accent: string; 
     eyebrow: "The whole collection",
     title: "All the",
     accent: "little things",
-    body: "Frocks, jablas, bodysuits and gift sets for every new chapter.",
+    body: "Frocks, jablas, nappies, sets and gift packs for every new chapter.",
     tint: "#DFE7DD",
     perks: ["Soft cotton", `Free shipping over ${inr(STORE.freeShippingAbove)}`, "Cash on Delivery"],
     art: [
@@ -100,7 +100,7 @@ const BANNERS: Record<string, { eyebrow: string; title: string; accent: string; 
   },
 };
 
-export function ShopBanner({ tab, age }: { tab: string; age: string }) {
+export function ShopBanner({ tab, age, photos = [] }: { tab: string; age: string; photos?: string[] }) {
   const b = BANNERS[tab] ?? BANNERS.all;
   const group = AGE_GROUPS.find((g) => g.slug === age);
   const key = `${tab}-${age}`;
@@ -153,10 +153,14 @@ export function ShopBanner({ tab, age }: { tab: string; age: string }) {
 
         <div className="relative hidden h-56 md:block">
           <AnimatePresence mode="popLayout">
-            {b.art.map((a, i) => (
+            {/* Real photographs when there are any, the drawings as a fallback.
+                The photos carry their own cream backdrop, so they are shown as
+                small rounded cards rather than floated like cut-outs, which
+                would read as pasted rectangles on the tinted banner. */}
+            {(photos.length ? photos : b.art).map((a, i) => (
               <motion.div
                 key={`${tab}-${i}`}
-                className="absolute top-1/2 w-[36%]"
+                className={`absolute top-1/2 ${photos.length ? "w-[27%]" : "w-[36%]"}`}
                 style={{ left: `${i * 31}%` }}
                 initial={{ opacity: 0, y: 40, rotate: 0 }}
                 animate={{ opacity: 1, y: "-50%", rotate: (i - 1) * 8 }}
@@ -164,7 +168,16 @@ export function ShopBanner({ tab, age }: { tab: string; age: string }) {
                 transition={{ delay: i * 0.08, type: "spring", stiffness: 120, damping: 14 }}
               >
                 <div className="anim-float" style={{ animationDelay: `${i * 0.6}s` }}>
-                  <Garment category={a.category} color={a.color} className="w-full" />
+                  {typeof a === "string" ? (
+                    <img
+                      src={a}
+                      alt=""
+                      draggable={false}
+                      className="aspect-[4/5] w-full rounded-2xl object-cover shadow-[0_18px_40px_-18px_rgba(60,50,40,0.45)]"
+                    />
+                  ) : (
+                    <Garment category={a.category} color={a.color} className="w-full" />
+                  )}
                 </div>
               </motion.div>
             ))}
