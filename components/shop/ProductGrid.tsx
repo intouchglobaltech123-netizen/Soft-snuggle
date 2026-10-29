@@ -57,15 +57,27 @@ export function ProductGrid({ products, initialTab, initialAge, showAgeFilter, b
   // rather than sitting on their photo backdrop. Gift sets are left out: the
   // banner wants clothes, not a box. A piece whose cut-out failed has no file
   // and is simply skipped.
-  const bannerPhotos = useMemo(
-    () =>
-      products
-        .filter((p) => p.category !== "gift-set" && cutouts[p.slug])
-        .filter((p) => tab === "all" || tab === "gift-set" || p.category === tab)
-        .slice(0, 3)
-        .map((p) => cutouts[p.slug]),
-    [products, tab, cutouts],
-  );
+  const bannerPhotos = useMemo(() => {
+    const eligible = products
+      .filter((p) => p.category !== "gift-set" && cutouts[p.slug])
+      .filter((p) => tab === "all" || tab === "gift-set" || p.category === tab);
+    // Two pieces in the same print sitting side by side made the trio look
+    // like one garment photographed twice, so take one per print family
+    // first (cherry-frock and cherry-jabla share "cherry") and only repeat a
+    // family if there is nothing else left.
+    const family = (slug: string) => slug.split("-")[0];
+    const seen = new Set<string>();
+    const varied = eligible.filter((p) => !seen.has(family(p.slug)) && seen.add(family(p.slug)));
+    const ordered = [...varied, ...eligible.filter((p) => !varied.includes(p))];
+    // Frocks and jablas hang like garments. A nappy is short and wide and a
+    // set is two pieces, so they sit oddly beside a dress; they go last and
+    // only appear when their own tab is showing or nothing else is left.
+    const hangs = (c: string) => (c === "frock" || c === "jabla" ? 0 : 1);
+    return [...ordered]
+      .sort((a, b) => hangs(a.category) - hangs(b.category))
+      .slice(0, 3)
+      .map((p) => cutouts[p.slug]);
+  }, [products, tab, cutouts]);
 
   return (
     <div>

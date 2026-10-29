@@ -151,7 +151,7 @@ export function ShopBanner({ tab, age, photos = [] }: { tab: string; age: string
           </motion.div>
         </AnimatePresence>
 
-        <div className="relative hidden h-56 md:block">
+        <div className="relative hidden h-64 md:block">
           <AnimatePresence mode="popLayout">
             {/* Real photographs when there are any, the drawings as a fallback.
                 The photographs are cut out of their backdrop in
@@ -160,10 +160,21 @@ export function ShopBanner({ tab, age, photos = [] }: { tab: string; age: string
             {(photos.length ? photos : b.art).map((a, i) => (
               <motion.div
                 key={`${tab}-${i}`}
-                className={`absolute top-1/2 ${photos.length ? "w-[27%]" : "w-[36%]"}`}
-                style={{ left: `${i * 31}%` }}
+                className={`absolute ${photos.length ? "bottom-0" : "top-1/2"} ${
+                  photos.length ? (i === 1 ? "w-[34%]" : "w-[30%]") : "w-[36%]"
+                }`}
+                style={{
+                  left: photos.length ? `${[0, 28, 58][i] ?? i * 31}%` : `${i * 31}%`,
+                  zIndex: i === 1 ? 2 : 1,
+                }}
                 initial={{ opacity: 0, y: 40, rotate: 0 }}
-                animate={{ opacity: 1, y: "-50%", rotate: (i - 1) * 8 }}
+                animate={{
+                  opacity: 1,
+                  // Shared baseline, with the middle piece dropped a touch so
+                  // the three read as an arrangement rather than a straight row.
+                  y: photos.length ? (i === 1 ? 10 : 0) : "-50%",
+                  rotate: photos.length ? [-6, 0, 6][i] ?? 0 : (i - 1) * 8,
+                }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ delay: i * 0.08, type: "spring", stiffness: 120, damping: 14 }}
               >
@@ -173,7 +184,7 @@ export function ShopBanner({ tab, age, photos = [] }: { tab: string; age: string
                       src={a}
                       alt=""
                       draggable={false}
-                      className="h-44 w-full object-contain [filter:drop-shadow(0_16px_18px_rgba(60,50,40,0.18))]"
+                      className="max-h-52 w-full object-contain object-bottom [filter:drop-shadow(0_18px_22px_rgba(60,50,40,0.22))]"
                     />
                   ) : (
                     <Garment category={a.category} color={a.color} className="w-full" />
