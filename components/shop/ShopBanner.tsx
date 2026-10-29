@@ -152,44 +152,64 @@ export function ShopBanner({ tab, age, photos = [] }: { tab: string; age: string
         </AnimatePresence>
 
         <div className="relative hidden h-64 md:block">
+          {/* The pieces hang from a line with little pegs, the same motif the
+              loading screen uses, rather than standing in a row. The line is
+              drawn across the full width and each garment is hung at the
+              height the curve reaches at its own position. */}
+          {photos.length > 0 && (
+            <svg
+              viewBox="0 0 400 60"
+              preserveAspectRatio="none"
+              className="pointer-events-none absolute inset-x-0 top-0 h-[60px] w-full overflow-visible"
+              aria-hidden="true"
+            >
+              <motion.path
+                d="M -30 16 Q 200 46 430 16"
+                fill="none"
+                stroke="#C3B49C"
+                strokeWidth="2"
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 0.7, ease: [0.65, 0, 0.35, 1] }}
+              />
+            </svg>
+          )}
+
           <AnimatePresence mode="popLayout">
-            {/* Real photographs when there are any, the drawings as a fallback.
-                The photographs are cut out of their backdrop in
-                public/banner, so they float on the tint the way the drawings
-                did. A soft drop-shadow follows the garment's own edge. */}
             {(photos.length ? photos : b.art).map((a, i) => (
               <motion.div
                 key={`${tab}-${i}`}
-                className={`absolute ${photos.length ? "bottom-0" : "top-1/2"} ${
-                  photos.length ? (i === 1 ? "w-[34%]" : "w-[30%]") : "w-[36%]"
+                className={`absolute ${photos.length ? "top-0" : "top-1/2"} ${
+                  photos.length ? "w-[29%]" : "w-[36%]"
                 }`}
                 style={{
-                  left: photos.length ? `${[0, 28, 58][i] ?? i * 31}%` : `${i * 31}%`,
-                  zIndex: i === 1 ? 2 : 1,
+                  // Hung at the point the curve has reached, so the pegs sit
+                  // on the line rather than near it.
+                  left: photos.length ? `${[2, 35, 68][i] ?? i * 33}%` : `${i * 31}%`,
+                  top: photos.length ? [26, 40, 26][i] ?? 30 : undefined,
                 }}
-                initial={{ opacity: 0, y: 40, rotate: 0 }}
-                animate={{
-                  opacity: 1,
-                  // Shared baseline, with the middle piece dropped a touch so
-                  // the three read as an arrangement rather than a straight row.
-                  y: photos.length ? (i === 1 ? 10 : 0) : "-50%",
-                  rotate: photos.length ? [-6, 0, 6][i] ?? 0 : (i - 1) * 8,
-                }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ delay: i * 0.08, type: "spring", stiffness: 120, damping: 14 }}
+                initial={{ opacity: 0, y: -60, rotate: -14 }}
+                // Dropped onto the line, swinging to a slight resting angle.
+                animate={{ opacity: 1, y: 0, rotate: [-14, 8, -4, 2, [-3, 1, 3][i] ?? 0] }}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ delay: i * 0.1, type: "spring", stiffness: 130, damping: 12 }}
               >
-                <div className="anim-float" style={{ animationDelay: `${i * 0.6}s` }}>
-                  {typeof a === "string" ? (
+                {typeof a === "string" ? (
+                  <div className="anim-float origin-top" style={{ animationDelay: `${i * 0.7}s` }}>
+                    <span className="mx-auto block h-4 w-[7px] -translate-y-2 rounded-sm bg-[#C9A27A] shadow-[inset_-1px_0_0_rgba(0,0,0,0.15)]" />
                     <img
                       src={a}
                       alt=""
                       draggable={false}
-                      className="max-h-52 w-full object-contain object-bottom [filter:drop-shadow(0_18px_22px_rgba(60,50,40,0.22))]"
+                      className="relative -z-10 -mt-2 max-h-48 w-full object-contain object-top [filter:drop-shadow(0_14px_16px_rgba(60,50,40,0.2))]"
                     />
-                  ) : (
+                  </div>
+                ) : (
+                  <div className="anim-float" style={{ animationDelay: `${i * 0.6}s` }}>
                     <Garment category={a.category} color={a.color} className="w-full" />
-                  )}
-                </div>
+                  </div>
+                )}
               </motion.div>
             ))}
           </AnimatePresence>
