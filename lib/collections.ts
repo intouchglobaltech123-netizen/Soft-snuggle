@@ -133,6 +133,20 @@ export const COLLECTIONS: Collection[] = [
     },
   },
   {
+    slug: "reef",
+    productSlug: "reef-jabla",
+    eyebrow: "New in",
+    title: "Little",
+    accent: "Reef",
+    label: "Little Reef Jabla",
+    blurb: "Turtles, starfish and a smiling stingray across white muslin, on a strappy top that ties at the shoulders.",
+    glow: "#EFEBF4",
+    look: {
+      skin: "#C68E6B", hair: "#2F2420", hairStyle: "tuft", outfit: "#FBFAF8",
+      kind: "bodysuit", detail: "dots", accessory: "none", prop: "star",
+    },
+  },
+  {
     slug: "day-pack",
     productSlug: "day-pack",
     eyebrow: "Gift ready",

@@ -163,6 +163,22 @@ const RAW: Omit<SeedProduct, "ageGroups">[] = [
     garment: "#FBF9F4",
   },
   {
+    slug: "reef-jabla",
+    name: "Little Reef Jabla",
+    category: "jabla",
+    fabric: "50% bamboo, 50% cotton",
+    colour: "White, sea creature print",
+    price: 349,
+    badge: "New",
+    organic: false,
+    sizes: CHART_SIZES,
+    description:
+      "A strappy muslin top printed with turtles, starfish, stripy fish and a smiling stingray. The shoulder straps tie, so the length grows with the baby and nothing has to go over the head on a hot day.",
+    care: "Hand wash or gentle machine wash cold. Dry in shade. Do not bleach.",
+    tint: "#EFEBF4",
+    garment: "#FBFAF8",
+  },
+  {
     slug: "day-pack",
     name: "The Day Pack",
     category: "gift-set",
