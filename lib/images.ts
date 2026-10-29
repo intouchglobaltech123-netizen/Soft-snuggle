@@ -30,6 +30,12 @@ export function heroImages(): Record<string, string> {
   return Object.fromEntries(list("hero").map((f) => [f.replace(IMAGE, ""), `/hero/${f}`]));
 }
 
+/** Background-free garment cut-outs for the shop banner, keyed by product
+ *  slug. See public/banner/README.txt. */
+export function garmentCutouts(): Record<string, string> {
+  return Object.fromEntries(list("banner").map((f) => [f.replace(IMAGE, ""), `/banner/${f}`]));
+}
+
 /** The cut-out beside "Made with love" on the home page, if one has been added.
  *  Any image in public/story is used; without one the section keeps its drawing. */
 export function storyImage(): string | undefined {

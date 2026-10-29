@@ -24,11 +24,13 @@ interface Props {
   initialTab?: string;
   initialAge?: string;
   showAgeFilter?: boolean;
+  /** Background-free garment cut-outs for the banner, keyed by product slug. */
+  cutouts?: Record<string, string>;
   /** Large header that changes with the selected filter (shop page) */
   banner?: boolean;
 }
 
-export function ProductGrid({ products, initialTab, initialAge, showAgeFilter, banner }: Props) {
+export function ProductGrid({ products, initialTab, initialAge, showAgeFilter, banner, cutouts = {} }: Props) {
   const [tab, setTab] = useState<TabKey>(TABS.some((t) => t.key === initialTab) ? (initialTab as TabKey) : "all");
   const [age, setAge] = useState<string>(initialAge ?? "all");
 
@@ -51,16 +53,18 @@ export function ProductGrid({ products, initialTab, initialAge, showAgeFilter, b
     return Object.fromEntries(TABS.map((t) => [t.key, pick(t.key)])) as Record<TabKey, string | undefined>;
   }, [products]);
 
-  // Three real garments for the banner. Gift sets are left out: the banner
-  // wants clothes, not a box.
+  // Three real garments for the banner, as cut-outs so they float on the tint
+  // rather than sitting on their photo backdrop. Gift sets are left out: the
+  // banner wants clothes, not a box. A piece whose cut-out failed has no file
+  // and is simply skipped.
   const bannerPhotos = useMemo(
     () =>
       products
-        .filter((p) => p.category !== "gift-set" && p.images[0])
+        .filter((p) => p.category !== "gift-set" && cutouts[p.slug])
         .filter((p) => tab === "all" || tab === "gift-set" || p.category === tab)
         .slice(0, 3)
-        .map((p) => p.images[0]),
-    [products, tab],
+        .map((p) => cutouts[p.slug]),
+    [products, tab, cutouts],
   );
 
   return (

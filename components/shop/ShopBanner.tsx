@@ -154,9 +154,9 @@ export function ShopBanner({ tab, age, photos = [] }: { tab: string; age: string
         <div className="relative hidden h-56 md:block">
           <AnimatePresence mode="popLayout">
             {/* Real photographs when there are any, the drawings as a fallback.
-                The photos carry their own cream backdrop, so they are shown as
-                small rounded cards rather than floated like cut-outs, which
-                would read as pasted rectangles on the tinted banner. */}
+                The photographs are cut out of their backdrop in
+                public/banner, so they float on the tint the way the drawings
+                did. A soft drop-shadow follows the garment's own edge. */}
             {(photos.length ? photos : b.art).map((a, i) => (
               <motion.div
                 key={`${tab}-${i}`}
@@ -173,7 +173,7 @@ export function ShopBanner({ tab, age, photos = [] }: { tab: string; age: string
                       src={a}
                       alt=""
                       draggable={false}
-                      className="aspect-[4/5] w-full rounded-2xl object-cover shadow-[0_18px_40px_-18px_rgba(60,50,40,0.45)]"
+                      className="h-44 w-full object-contain [filter:drop-shadow(0_16px_18px_rgba(60,50,40,0.18))]"
                     />
                   ) : (
                     <Garment category={a.category} color={a.color} className="w-full" />

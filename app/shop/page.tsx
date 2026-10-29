@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ProductGrid } from "@/components/shop/ProductGrid";
+import { garmentCutouts } from "@/lib/images";
 import { getProducts } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +18,15 @@ export default async function ShopPage({
     <div className="speckle min-h-screen">
       <section className="mx-auto max-w-7xl px-4 pb-24 pt-32 sm:px-6">
         {/* key resets the filters when the URL changes */}
-        <ProductGrid key={`${category}-${age}`} products={products} initialTab={category} initialAge={age} showAgeFilter banner />
+        <ProductGrid
+          key={`${category}-${age}`}
+          products={products}
+          initialTab={category}
+          initialAge={age}
+          showAgeFilter
+          banner
+          cutouts={garmentCutouts()}
+        />
       </section>
     </div>
   );
