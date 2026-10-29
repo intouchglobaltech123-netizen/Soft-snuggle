@@ -64,7 +64,7 @@ export function AgeTiles({
       />
     ),
     figure: photos[g.slug] ? (
-      <img src={photos[g.slug]} alt="" className="h-full w-full object-contain object-bottom" draggable={false} />
+      <img src={photos[g.slug]} alt="" className="h-full w-auto object-contain object-bottom" draggable={false} />
     ) : (
       <Baby look={{ ...LOOKS[i], outfit: outfits[i] ?? LOOKS[i].outfit }} className="h-full w-full" />
     ),
@@ -102,7 +102,9 @@ export function AgeTiles({
                     </Link>
                   </div>
                   {/* The figure keeps its own column so the text never wraps around it */}
-                  <div className="aspect-[220/320] w-[29%] shrink-0 self-end">{figure}</div>
+                  <div className={`shrink-0 self-end ${photos[g.slug] ? "w-[40%] max-h-[210px]" : "aspect-[220/320] w-[29%]"}`}>
+                    {figure}
+                  </div>
                 </div>
                 {swatches}
               </div>
@@ -161,12 +163,16 @@ export function AgeTiles({
               )}
               {/* The baby gets whatever height is left below the button, so the two never overlap */}
               <div className="pointer-events-none -mb-4 mt-2 flex min-h-0 flex-1 items-end justify-end">
-                <div className="aspect-[220/320] h-full max-h-[300px] transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:-translate-y-3 group-hover:rotate-[-4deg]">
+                <div
+                  className={`h-full transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:-translate-y-3 group-hover:rotate-[-4deg] ${
+                    photos[g.slug] ? "max-h-[440px]" : "aspect-[220/320] max-h-[300px]"
+                  }`}
+                >
                   {photos[g.slug] ? (
                     <img
                       src={photos[g.slug]}
                       alt=""
-                      className="h-full w-full object-contain object-bottom"
+                      className="h-full w-auto object-contain object-bottom"
                       draggable={false}
                     />
                   ) : (
