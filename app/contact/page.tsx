@@ -10,11 +10,11 @@ export default function ContactPage() {
   const cards = [
     {
       title: "WhatsApp",
-      body: "Order any hour, or ask us about sizes and delivery.",
+      body: "Order any hour, or ask about sizes and delivery.",
       cta: "Chat with us",
       href: `https://wa.me/${STORE.whatsappNumber}?text=${encodeURIComponent("Hi Soft Snuggle! ")}`,
       tint: "#DFE7DD",
-      icon: <WhatsAppIcon className="h-6 w-6 text-[#25D366]" />,
+      icon: <WhatsAppIcon className="h-5 w-5 text-[#25D366]" />,
     },
     {
       title: "Email",
@@ -22,7 +22,7 @@ export default function ContactPage() {
       cta: STORE.email,
       href: `mailto:${STORE.email}`,
       tint: "#F3D8C8",
-      icon: <span className="text-xl">✉️</span>,
+      icon: <span className="text-lg">✉️</span>,
     },
     {
       title: "Instagram",
@@ -30,34 +30,48 @@ export default function ContactPage() {
       cta: "Follow us",
       href: STORE.instagram,
       tint: "#DCE6EE",
-      icon: <span className="text-xl">📸</span>,
+      icon: <span className="text-lg">📸</span>,
     },
   ];
 
   return (
-    <div className="speckle min-h-[80vh]">
-      <section className="mx-auto max-w-5xl px-6 pb-24 pt-32">
+    // Sized to one phone screen with no footer below it, so the three ways to
+    // reach the shop are all in view without scrolling. svh rather than vh so
+    // the mobile browser's own chrome is taken into account.
+    <div className="speckle flex min-h-[100svh] flex-col justify-center px-5 pb-8 pt-24 sm:min-h-0 sm:px-6 sm:pb-24 sm:pt-32">
+      <section className="mx-auto w-full max-w-5xl">
         <Reveal className="text-center">
-          <FlowerMark className="anim-float mx-auto h-12 w-12" />
-          <h1 className="mt-5 font-display text-5xl tracking-tight sm:text-6xl">
+          <FlowerMark className="anim-float mx-auto h-9 w-9 sm:h-12 sm:w-12" />
+          <h1 className="mt-3 font-display text-4xl tracking-tight sm:mt-5 sm:text-6xl">
             Say <em className="text-sage-deep">hello</em>
           </h1>
-          <p className="mx-auto mt-3 max-w-md text-ink-soft">Here whenever you need us, 24×7. Every message reaches a real person.</p>
+          <p className="mx-auto mt-2 max-w-md text-sm text-ink-soft sm:mt-3 sm:text-base">
+            Here whenever you need us, 24×7. Every message reaches a real person.
+          </p>
         </Reveal>
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
+
+        {/* A row per channel on a phone, so three fit in a screen; the old
+            stacked cards ran to nearly twice the height of one. */}
+        <div className="mt-6 grid gap-3 sm:mt-12 sm:gap-4 md:grid-cols-3">
           {cards.map((c, i) => (
             <Reveal key={c.title} delay={i * 0.08}>
               <a
                 href={c.href}
                 target={c.href.startsWith("http") ? "_blank" : undefined}
                 rel="noreferrer"
-                className="group block h-full rounded-[28px] p-7 transition-transform duration-500 hover:-translate-y-1.5"
+                className="group flex h-full items-center gap-4 rounded-[22px] p-4 transition-transform duration-500 hover:-translate-y-1.5 sm:block sm:rounded-[28px] sm:p-7"
                 style={{ background: c.tint }}
               >
-                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-paper">{c.icon}</span>
-                <h2 className="mt-6 font-display text-2xl">{c.title}</h2>
-                <p className="mt-1 text-sm text-ink-soft">{c.body}</p>
-                <span className="mt-5 inline-block text-sm font-bold underline-offset-4 group-hover:underline">{c.cta} →</span>
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-paper sm:h-12 sm:w-12">
+                  {c.icon}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-display text-xl sm:mt-6 sm:text-2xl">{c.title}</span>
+                  <span className="mt-0.5 block text-[13px] leading-snug text-ink-soft sm:mt-1 sm:text-sm">{c.body}</span>
+                  <span className="mt-1.5 block truncate text-[13px] font-bold underline-offset-4 group-hover:underline sm:mt-5 sm:inline-block sm:text-sm">
+                    {c.cta} →
+                  </span>
+                </span>
               </a>
             </Reveal>
           ))}

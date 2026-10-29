@@ -83,7 +83,10 @@ export function ProductGrid({ products, initialTab, initialAge, showAgeFilter, b
     <div>
       {banner && <ShopBanner tab={tab} age={age} photos={bannerPhotos} />}
       <LayoutGroup id="tabs">
-        <div className="no-scrollbar -mx-6 flex gap-2 overflow-x-auto px-6 pb-2">
+        {/* Wraps rather than scrolling sideways: every filter is visible
+            without dragging, and the row no longer pushes the page wider than
+            the screen. */}
+        <div className="flex flex-wrap gap-2 pb-2">
           {TABS.map((t) => (
             <button
               key={t.key}
@@ -109,7 +112,7 @@ export function ProductGrid({ products, initialTab, initialAge, showAgeFilter, b
       </LayoutGroup>
 
       {showAgeFilter && (
-        <div className="no-scrollbar -mx-6 mt-3 flex gap-2 overflow-x-auto px-6 pb-2">
+        <div className="mt-3 flex flex-wrap gap-2 pb-2">
           {[{ slug: "all", title: "All ages", tint: "#FDFBF6" }, ...AGE_GROUPS].map((g) => (
             <button
               key={g.slug}

@@ -206,13 +206,13 @@ export function ProductDetail({ product }: { product: Product }) {
           {product.fabric} · {product.colour}
           {product.organic && <span className="ml-2 rounded-full bg-sage px-2.5 py-0.5 text-xs font-extrabold text-ink">✿ Organic</span>}
         </p>
-        <p className="mt-4 font-display text-3xl sm:mt-5 sm:text-4xl">
+        <p className="mt-3 font-display text-[1.75rem] sm:mt-5 sm:text-4xl">
           {inr(product.price)}
           {product.compareAt && <s className="ml-3 text-xl text-ink-soft">{inr(product.compareAt)}</s>}
         </p>
 
         {product.colours.length > 1 && (
-          <div className="mt-8">
+          <div className="mt-6 sm:mt-8">
             <p className="text-sm font-extrabold uppercase tracking-[0.18em]">
               Colour <span className="ml-2 font-bold normal-case tracking-normal text-ink-soft">{colour.name}</span>
             </p>
@@ -228,7 +228,7 @@ export function ProductDetail({ product }: { product: Product }) {
                     aria-label={c.name}
                     title={c.name}
                     onClick={() => pickColour(c)}
-                    className="grid h-11 w-11 place-items-center rounded-full outline-none transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-ink/40"
+                    className="grid h-9 w-9 place-items-center rounded-full outline-none transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-ink/40 sm:h-11 sm:w-11"
                   >
                     <span
                       className={`block h-9 w-9 rounded-full border border-ink/15 transition-shadow ${
@@ -243,7 +243,7 @@ export function ProductDetail({ product }: { product: Product }) {
           </div>
         )}
 
-        <div className="mt-8">
+        <div className="mt-6 sm:mt-8">
           <div className="flex items-center justify-between">
             <p className="text-sm font-extrabold uppercase tracking-[0.18em]">Size</p>
             {product.category !== "nappy" && product.category !== "set" && (
@@ -253,7 +253,7 @@ export function ProductDetail({ product }: { product: Product }) {
             )}
           </div>
           <motion.div
-            className="mt-3 flex flex-wrap gap-2"
+            className="mt-3 grid grid-cols-4 gap-2 sm:flex sm:flex-wrap"
             animate={needSize ? { x: [0, -10, 10, -6, 6, 0] } : {}}
             transition={{ duration: 0.45 }}
           >
@@ -262,7 +262,7 @@ export function ProductDetail({ product }: { product: Product }) {
                 <button
                   key={s}
                   onClick={() => setSize(s)}
-                  className={`relative min-w-[4.5rem] rounded-2xl border px-4 py-3 font-bold transition-colors sm:min-w-20 ${
+                  className={`relative rounded-2xl border px-2 py-2.5 text-sm font-bold transition-colors sm:min-w-20 sm:px-4 sm:py-3 sm:text-base ${
                     size === s ? "border-ink text-paper" : needSize ? "border-rose" : "border-line bg-paper hover:border-ink/40"
                   }`}
                 >
@@ -286,13 +286,13 @@ export function ProductDetail({ product }: { product: Product }) {
           </AnimatePresence>
         </div>
 
-        <div ref={buyRef} className="mt-8 flex items-center gap-3">
+        <div ref={buyRef} className="mt-6 flex items-center gap-3 sm:mt-8">
           <QtyStepper value={qty} onChange={(v) => setQty(Math.max(1, v))} />
           <motion.button
             onClick={addToBag}
             disabled={!product.inStock}
             whileTap={{ scale: 0.97 }}
-            className={`btn-primary flex-1 py-4 text-base ${added ? "!bg-sage-deep" : ""}`}
+            className={`btn-primary flex-1 py-3.5 text-[15px] sm:py-4 sm:text-base ${added ? "!bg-sage-deep" : ""}`}
           >
             <AnimatePresence mode="wait" initial={false}>
               <motion.span
@@ -314,13 +314,13 @@ export function ProductDetail({ product }: { product: Product }) {
           className="mt-4 w-full rounded-2xl border border-line bg-paper py-3.5 text-ink hover:border-ink/40"
         />
 
-        <ul className="mt-6 grid grid-cols-2 gap-2 text-[13px] text-ink-soft sm:text-sm">
+        <ul className="mt-5 grid grid-cols-2 gap-2 text-xs text-ink-soft sm:mt-6 sm:text-sm">
           {["🕒 24×7 ordering", "🚚 Free over " + inr(STORE.freeShippingAbove), "💵 Cash on Delivery", "🔁 Easy size exchange"].map((t) => (
-            <li key={t} className="rounded-2xl bg-paper px-3 py-3 font-semibold sm:px-4">{t}</li>
+            <li key={t} className="rounded-2xl bg-paper px-2.5 py-2.5 font-semibold sm:px-4 sm:py-3">{t}</li>
           ))}
         </ul>
 
-        <div className="mt-8 divide-y divide-line border-y border-line">
+        <div className="mt-6 divide-y divide-line border-y border-line sm:mt-8">
           {panels.map((p) => (
             <div key={p.key}>
               <button
