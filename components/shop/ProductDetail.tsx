@@ -246,7 +246,7 @@ export function ProductDetail({ product }: { product: Product }) {
         <div className="mt-8">
           <div className="flex items-center justify-between">
             <p className="text-sm font-extrabold uppercase tracking-[0.18em]">Size</p>
-            {product.category !== "nappy" && (
+            {product.category !== "nappy" && product.category !== "set" && (
               <button onClick={() => setOpenPanel(openPanel === "guide" ? null : "guide")} className="text-sm font-bold underline underline-offset-4">
                 Size guide
               </button>

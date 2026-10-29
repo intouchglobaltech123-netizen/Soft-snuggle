@@ -20,6 +20,7 @@ export const CATEGORY_LABELS = {
   frock: "Frocks",
   jabla: "Jablas",
   nappy: "Nappies",
+  set: "Sets",
   bodysuit: "Bodysuits",
   romper: "Rompers",
   "gift-set": "Gift Sets",

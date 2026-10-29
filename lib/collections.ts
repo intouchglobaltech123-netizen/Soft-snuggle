@@ -105,6 +105,20 @@ export const COLLECTIONS: Collection[] = [
     },
   },
   {
+    slug: "moonbeam",
+    productSlug: "moonbeam-set",
+    eyebrow: "New in",
+    title: "Moonbeam",
+    accent: "Set",
+    label: "Moonbeam Night Set",
+    blurb: "A two-piece muslin set printed with little blue moons, buttoning down the front for easy night changes.",
+    glow: "#EAF0F7",
+    look: {
+      skin: "#E8BE9C", hair: "#2F2420", hairStyle: "curls", outfit: "#F8FAFC",
+      kind: "romper", detail: "cloud", accessory: "none", prop: "star",
+    },
+  },
+  {
     slug: "day-pack",
     productSlug: "day-pack",
     eyebrow: "Gift ready",
