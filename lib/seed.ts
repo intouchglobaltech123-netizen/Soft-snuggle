@@ -179,6 +179,22 @@ const RAW: Omit<SeedProduct, "ageGroups">[] = [
     garment: "#FBFAF8",
   },
   {
+    slug: "moonbeam-jabla",
+    name: "Moonbeam Wrap Jabla",
+    category: "jabla",
+    fabric: "50% bamboo, 50% cotton",
+    colour: "White, blue moon print",
+    price: 449,
+    badge: "New",
+    organic: false,
+    sizes: CHART_SIZES,
+    description:
+      "The same little blue moons as the Moonbeam Night Set, on a sleeveless crossover jabla. It ties twice down the side and opens flat, so a newborn can be dressed without anything going over the head.",
+    care: "Hand wash or gentle machine wash cold. Dry in shade. Do not bleach.",
+    tint: "#EAF0F7",
+    garment: "#FBFCFE",
+  },
+  {
     slug: "day-pack",
     name: "The Day Pack",
     category: "gift-set",

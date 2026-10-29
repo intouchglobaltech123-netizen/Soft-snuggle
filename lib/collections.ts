@@ -147,6 +147,20 @@ export const COLLECTIONS: Collection[] = [
     },
   },
   {
+    slug: "moonbeam-wrap",
+    productSlug: "moonbeam-jabla",
+    eyebrow: "New in",
+    title: "Moonbeam",
+    accent: "Jabla",
+    label: "Moonbeam Wrap Jabla",
+    blurb: "The Moonbeam print on a sleeveless crossover jabla, tying twice down the side and opening flat.",
+    glow: "#EAF0F7",
+    look: {
+      skin: "#F3CDB0", hair: "#3A2A1E", hairStyle: "tuft", outfit: "#FBFCFE",
+      kind: "bodysuit", detail: "cloud", accessory: "none", prop: "none",
+    },
+  },
+  {
     slug: "day-pack",
     productSlug: "day-pack",
     eyebrow: "Gift ready",
