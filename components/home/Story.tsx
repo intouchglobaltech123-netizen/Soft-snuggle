@@ -16,9 +16,14 @@ const VALUES = [
 export function Story({ photo }: { photo?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const babyY = useTransform(scrollYProgress, [0, 1], [80, -80]);
+  // A photograph fills its box edge to edge, where the drawing carries its own
+  // padding. The full parallax travel lifted a real baby's head out through the
+  // top of the card, so a photo drifts less far.
+  const babyY = useTransform(scrollYProgress, [0, 1], photo ? [44, -44] : [80, -80]);
   const cloudY = useTransform(scrollYProgress, [0, 1], [40, -30]);
-  const rotate = useTransform(scrollYProgress, [0, 1], [-6, 6]);
+  // The tilt gives the drawing some life; on a photograph it just looks like a
+  // crooked crop, so it is softened.
+  const rotate = useTransform(scrollYProgress, [0, 1], photo ? [-2, 2] : [-6, 6]);
 
   return (
     <section id="story" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32">
@@ -38,7 +43,12 @@ export function Story({ photo }: { photo?: string }) {
 
         <div className="relative h-[420px] lg:h-auto lg:min-h-[560px]">
           <motion.div className="absolute bottom-10 left-1/2 h-[46%] w-[78%] -translate-x-1/2 rounded-[50%] bg-[#C5D4C3]" style={{ y: cloudY }} />
-          <motion.div className="absolute bottom-16 left-1/2 aspect-[220/320] h-[78%] -translate-x-1/2" style={{ y: babyY, rotate }}>
+          <motion.div
+            className={`absolute left-1/2 aspect-[220/320] -translate-x-1/2 ${
+              photo ? "bottom-10 h-[70%]" : "bottom-16 h-[78%]"
+            }`}
+            style={{ y: babyY, rotate }}
+          >
             {photo ? (
               <img src={photo} alt="" className="h-full w-full object-contain object-bottom" draggable={false} />
             ) : (
