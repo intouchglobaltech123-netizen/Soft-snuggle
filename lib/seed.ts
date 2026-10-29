@@ -195,6 +195,22 @@ const RAW: Omit<SeedProduct, "ageGroups">[] = [
     garment: "#FBFCFE",
   },
   {
+    slug: "panda-jabla",
+    name: "Panda Bamboo Jabla",
+    category: "jabla",
+    fabric: "100% cotton",
+    colour: "White, panda and bear print",
+    price: 449,
+    badge: "New",
+    organic: false,
+    sizes: CHART_SIZES,
+    description:
+      "A sleeveless V-neck jabla in layered cotton muslin, printed with pandas and little brown bears nibbling bamboo. Four buttons down the front and a soft bound edge all the way round.",
+    care: "Hand wash or gentle machine wash cold. Dry in shade. Do not bleach.",
+    tint: "#EFF3EA",
+    garment: "#FBFBF8",
+  },
+  {
     slug: "day-pack",
     name: "The Day Pack",
     category: "gift-set",

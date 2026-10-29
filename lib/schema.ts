@@ -1,3 +1,13 @@
+import { CATEGORIES } from "./types";
+
+const CATEGORY_LIST = CATEGORIES.map((c) => `'${c}'`).join(", ");
+// The old guard looked for one word, so once 'jabla' was in the constraint it
+// never ran again and later categories never reached the database. Checking
+// every category means the constraint rebuilds itself whenever the list grows.
+const CATEGORY_GUARD = CATEGORIES.map(
+  (c) => `pg_get_constraintdef(oid) LIKE '%''${c}''%'`,
+).join("\n      AND ");
+
 // Runs on every server start. Every statement is idempotent, so it is safe
 // against both the embedded database and a real PostgreSQL server.
 export const SCHEMA_SQL = `
@@ -23,16 +33,18 @@ CREATE TABLE IF NOT EXISTS products (
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- Allowed categories, updated on start so new ones reach existing databases.
+-- Allowed categories, rebuilt from lib/types.ts whenever the stored constraint
+-- is missing any of them, so a new category reaches an existing database.
 -- Only rewritten when out of date, so parallel server starts don't race each other.
 DO $$ BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM pg_constraint
-    WHERE conname = 'products_category_check' AND pg_get_constraintdef(oid) LIKE '%jabla%'
+    WHERE conname = 'products_category_check'
+      AND ${CATEGORY_GUARD}
   ) THEN
     ALTER TABLE products DROP CONSTRAINT IF EXISTS products_category_check;
     ALTER TABLE products ADD CONSTRAINT products_category_check
-      CHECK (category IN ('frock', 'jabla', 'bodysuit', 'romper', 'gift-set'));
+      CHECK (category IN (${CATEGORY_LIST}));
   END IF;
 END $$;
 

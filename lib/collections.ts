@@ -161,6 +161,20 @@ export const COLLECTIONS: Collection[] = [
     },
   },
   {
+    slug: "panda",
+    productSlug: "panda-jabla",
+    eyebrow: "New in",
+    title: "Panda",
+    accent: "Bamboo",
+    label: "Panda Bamboo Jabla",
+    blurb: "Pandas and little brown bears nibbling bamboo, on a soft V-neck jabla that buttons down the front.",
+    glow: "#EFF3EA",
+    look: {
+      skin: "#D9A47F", hair: "#24190F", hairStyle: "curls", outfit: "#FBFBF8",
+      kind: "bodysuit", detail: "flower", accessory: "none", prop: "teddy",
+    },
+  },
+  {
     slug: "day-pack",
     productSlug: "day-pack",
     eyebrow: "Gift ready",

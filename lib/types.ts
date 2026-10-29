@@ -1,4 +1,10 @@
-export type Category = "frock" | "jabla" | "nappy" | "set" | "bodysuit" | "romper" | "gift-set";
+// The single source of truth for categories. lib/schema.ts builds the database
+// CHECK constraint from this list, so adding one here reaches the database too.
+// They used to be two separate lists, and adding "nappy" to the type without
+// the constraint took every page down with a 23514.
+export const CATEGORIES = ["frock", "jabla", "nappy", "set", "bodysuit", "romper", "gift-set"] as const;
+
+export type Category = (typeof CATEGORIES)[number];
 
 export interface ColourOption {
   name: string;
