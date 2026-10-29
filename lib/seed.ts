@@ -83,6 +83,22 @@ const RAW: Omit<SeedProduct, "ageGroups">[] = [
     garment: "#F6F1E2",
   },
   {
+    slug: "zebra-jabla",
+    name: "Zebra Doodle Jabla",
+    category: "jabla",
+    fabric: "50% bamboo, 50% cotton",
+    colour: "Ivory, zebra doodle",
+    price: 449,
+    badge: "New",
+    organic: false,
+    sizes: CHART_SIZES,
+    description:
+      "A sleeveless jabla in soft crinkled muslin, ivory all over with one hand-drawn zebra on the front. It ties at the back of the neck, so it goes on and comes off without pulling anything over a small head.",
+    care: "Hand wash or gentle machine wash cold. Dry in shade. Do not bleach.",
+    tint: "#F1EDE5",
+    garment: "#F6F3EC",
+  },
+  {
     slug: "day-pack",
     name: "The Day Pack",
     category: "gift-set",

@@ -63,6 +63,20 @@ export const COLLECTIONS: Collection[] = [
     },
   },
   {
+    slug: "zebra",
+    productSlug: "zebra-jabla",
+    eyebrow: "New in",
+    title: "Zebra",
+    accent: "Doodle",
+    label: "Zebra Doodle Jabla",
+    blurb: "One hand-drawn zebra on soft ivory muslin, tied at the back of the neck for easy changes.",
+    glow: "#F1EDE5",
+    look: {
+      skin: "#D9A47F", hair: "#2F2420", hairStyle: "tuft", outfit: "#F6F3EC",
+      kind: "bodysuit", detail: "dots", accessory: "none", prop: "star",
+    },
+  },
+  {
     slug: "day-pack",
     productSlug: "day-pack",
     eyebrow: "Gift ready",
