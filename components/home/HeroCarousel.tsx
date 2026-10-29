@@ -21,14 +21,13 @@ import { Baby } from "../art/Baby";
 import { FlowerMark } from "../art/FlowerMark";
 import { useIntro } from "../providers/IntroProvider";
 
-const N = COLLECTIONS.length;
 /** Slots per second the line of characters drifts by */
 const GLIDE_SPEED = 0.22;
 
-/** Signed distance of slide i from the centre position p, wrapped to [-N/2, N/2). */
-function distance(i: number, p: number) {
-  let d = (((i - p) % N) + N) % N;
-  if (d >= N / 2) d -= N;
+/** Signed distance of slide i from the centre position p, wrapped to [-n/2, n/2). */
+function distance(i: number, p: number, n: number) {
+  let d = (((i - p) % n) + n) % n;
+  if (d >= n / 2) d -= n;
   return d;
 }
 
@@ -56,7 +55,15 @@ export function HeroCarousel({ heroImages }: { heroImages: Record<string, string
   const pos = useMotionValue(0);
   const stageRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
-  const current = COLLECTIONS[active];
+  // Only the pieces with a photographed cut-out in public/hero ride the
+  // carousel: a drawing standing next to a photograph reads as a placeholder.
+  // Drop a cut-out in and that slide appears on its own; nothing to edit here.
+  const photographed = COLLECTIONS.filter((c) => heroImages[c.slug]);
+  // If public/hero is ever empty the carousel would have nothing to centre on,
+  // so fall back to the drawings rather than rendering an empty stage.
+  const slides = photographed.length ? photographed : COLLECTIONS;
+  const N = slides.length;
+  const current = slides[Math.min(active, N - 1)];
 
   useEffect(() => {
     const el = stageRef.current;
@@ -88,7 +95,7 @@ export function HeroCarousel({ heroImages }: { heroImages: Record<string, string
     animate(pos, target, { type: "spring", stiffness: 70, damping: 18 });
   };
   const step = (dir: 1 | -1) => glideTo(Math.round(pos.get()) + dir);
-  const goToSlide = (i: number) => glideTo(pos.get() + distance(i, pos.get()));
+  const goToSlide = (i: number) => glideTo(pos.get() + distance(i, pos.get(), N));
   const stepRef = useRef(step);
   stepRef.current = step;
 
@@ -199,7 +206,7 @@ export function HeroCarousel({ heroImages }: { heroImages: Record<string, string
             glideTo(Math.round(pos.get() - (info.velocity.x / spacing) * 0.35));
           }}
         >
-          {COLLECTIONS.map((c, i) => (
+          {slides.map((c, i) => (
             <GlideItem
               key={c.slug}
               collection={c}
@@ -208,8 +215,9 @@ export function HeroCarousel({ heroImages }: { heroImages: Record<string, string
               spacing={spacing}
               image={heroImages[c.slug]}
               compact={compact}
+              count={N}
               onSelect={() => {
-                const d = distance(i, pos.get());
+                const d = distance(i, pos.get(), N);
                 if (Math.abs(d) < 0.5) router.push(`/product/${c.productSlug}`);
                 else goToSlide(i);
               }}
@@ -230,7 +238,7 @@ export function HeroCarousel({ heroImages }: { heroImages: Record<string, string
           <div className="flex items-center gap-4">
             <ArrowButton dir={-1} onClick={() => step(-1)} />
             <div className="flex items-center gap-1.5">
-              {COLLECTIONS.map((c, i) => (
+              {slides.map((c, i) => (
                 <button
                   key={c.slug}
                   onClick={() => goToSlide(i)}
@@ -255,6 +263,7 @@ function GlideItem({
   spacing,
   image,
   compact,
+  count,
   onSelect,
 }: {
   collection: Collection;
@@ -263,21 +272,22 @@ function GlideItem({
   spacing: number;
   image?: string;
   compact: boolean;
+  count: number;
   onSelect: () => void;
 }) {
   const x = useTransform(pos, (p) => {
-    const d = distance(index, p);
+    const d = distance(index, p, count);
     const a = Math.abs(d);
     return Math.sign(d) * (Math.min(a, 1) * spacing + Math.max(a - 1, 0) * spacing * 0.78);
   });
-  const scale = useTransform(pos, (p) => lerp(Math.abs(distance(index, p)), [0, 1, 2, 3], [1, 0.58, 0.42, 0.32]));
+  const scale = useTransform(pos, (p) => lerp(Math.abs(distance(index, p, count)), [0, 1, 2, 3], [1, 0.58, 0.42, 0.32]));
   // Neighbours fade out faster on a phone, where they would otherwise crowd
   // the piece being looked at.
   const opacity = useTransform(pos, (p) =>
-    lerp(Math.abs(distance(index, p)), compact ? [0, 0.6, 1.1] : [0, 1.6, 2.4], [1, 0.45, 0]),
+    lerp(Math.abs(distance(index, p, count)), compact ? [0, 0.6, 1.1] : [0, 1.6, 2.4], [1, 0.45, 0]),
   );
-  const labelOpacity = useTransform(pos, (p) => lerp(Math.abs(distance(index, p)), [0, 1.15, 1.6], [1, 1, 0]));
-  const zIndex = useTransform(pos, (p) => Math.round(100 - Math.abs(distance(index, p)) * 10));
+  const labelOpacity = useTransform(pos, (p) => lerp(Math.abs(distance(index, p, count)), [0, 1.15, 1.6], [1, 1, 0]));
+  const zIndex = useTransform(pos, (p) => Math.round(100 - Math.abs(distance(index, p, count)) * 10));
 
   return (
     <motion.div className="absolute bottom-0 left-1/2 aspect-[220/320] h-full" style={{ x, opacity, zIndex }}>
