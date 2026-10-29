@@ -115,6 +115,22 @@ const RAW: Omit<SeedProduct, "ageGroups">[] = [
     garment: "#F7F3EA",
   },
   {
+    slug: "zebra-wrap-jabla",
+    name: "Zebra Wrap Jabla",
+    category: "jabla",
+    fabric: "50% bamboo, 50% cotton",
+    colour: "White, zebra motif",
+    price: 449,
+    badge: "New",
+    organic: false,
+    sizes: CHART_SIZES,
+    description:
+      "A crossover wrap jabla in soft white muslin, with one hand-drawn zebra on the front and braided cord ties at the side. Nothing goes over the head, which makes it the easiest thing to put on a newborn.",
+    care: "Hand wash or gentle machine wash cold. Dry in shade. Do not bleach.",
+    tint: "#F3F0EA",
+    garment: "#FBFAF7",
+  },
+  {
     slug: "day-pack",
     name: "The Day Pack",
     category: "gift-set",

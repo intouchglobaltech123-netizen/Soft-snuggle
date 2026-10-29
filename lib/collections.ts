@@ -91,6 +91,20 @@ export const COLLECTIONS: Collection[] = [
     },
   },
   {
+    slug: "zebra-wrap",
+    productSlug: "zebra-wrap-jabla",
+    eyebrow: "New in",
+    title: "Zebra",
+    accent: "Wrap",
+    label: "Zebra Wrap Jabla",
+    blurb: "A crossover wrap jabla in white muslin with braided side ties, so nothing has to go over the head.",
+    glow: "#F3F0EA",
+    look: {
+      skin: "#E8BE9C", hair: "#2F2420", hairStyle: "curls", outfit: "#FBFAF7",
+      kind: "bodysuit", detail: "dots", accessory: "none", prop: "none",
+    },
+  },
+  {
     slug: "day-pack",
     productSlug: "day-pack",
     eyebrow: "Gift ready",
