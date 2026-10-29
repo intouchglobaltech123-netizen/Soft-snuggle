@@ -67,6 +67,22 @@ const RAW: Omit<SeedProduct, "ageGroups">[] = [
     garment: "#F3EBC4",
   },
   {
+    slug: "lemon-frock",
+    name: "Lemon Grove Frock",
+    category: "frock",
+    fabric: "50% bamboo, 50% cotton",
+    colour: "Ivory, lemon print",
+    price: 349,
+    badge: "New",
+    organic: false,
+    sizes: CHART_SIZES,
+    description:
+      "A sleeveless frock in airy crinkled muslin, printed all over with watercolour lemons. Snaps run the whole way down the front, and a gathered waist gives the skirt its swing.",
+    care: "Hand wash or gentle machine wash cold. Dry in shade. Do not bleach.",
+    tint: "#F7F3E0",
+    garment: "#F6F1E2",
+  },
+  {
     slug: "day-pack",
     name: "The Day Pack",
     category: "gift-set",

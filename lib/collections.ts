@@ -49,6 +49,20 @@ export const COLLECTIONS: Collection[] = [
     },
   },
   {
+    slug: "lemon",
+    productSlug: "lemon-frock",
+    eyebrow: "New in",
+    title: "Lemon",
+    accent: "Grove",
+    label: "Lemon Grove Frock",
+    blurb: "Watercolour lemons across airy crinkled muslin, with snaps down the front and a skirt that swings.",
+    glow: "#F7F3E0",
+    look: {
+      skin: "#E8BE9C", hair: "#3A2A1E", hairStyle: "curls", outfit: "#F6F1E2",
+      kind: "bodysuit", detail: "flower", accessory: "bow", accessoryColor: "#F2DE9A", prop: "none",
+    },
+  },
+  {
     slug: "day-pack",
     productSlug: "day-pack",
     eyebrow: "Gift ready",
