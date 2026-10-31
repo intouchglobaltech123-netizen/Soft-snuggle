@@ -83,3 +83,22 @@ UPDATE orders SET status = 'cancelled', updated_at = now() WHERE code = 'SS-1042
 Needs Node.js hosting (Vercel, Railway, Render, a VPS) plus a Postgres database. Plain cPanel shared
 hosting usually cannot run a Next.js server. Set the same env vars there, with `DATABASE_URL` pointing at
 your Postgres.
+
+On Vercel and Railway the site refuses to start without `DATABASE_URL` and `SESSION_SECRET`: the embedded
+database would be wiped on every deploy, and the fallback secret is public in this repo.
+
+### Railway
+
+The live site runs on Railway (`soft-snuggle-production.up.railway.app`), deployed from `main`.
+
+1. In the project, **+ Create → Database → PostgreSQL**. The service is named `Postgres`.
+2. On the app service's **Variables**, add:
+   - `DATABASE_URL` = `${{Postgres.DATABASE_URL}}` (Railway's private network; no SSL setting needed)
+   - `SESSION_SECRET` = a long random value (`openssl rand -base64 32`)
+   - the WhatsApp, UPI and shipping values from `.env.example`
+3. Redeploy. The first start creates the tables and loads the catalogue.
+
+To work against the Railway database from your own computer, put the Postgres service's
+`DATABASE_PUBLIC_URL` into `.env.local` with `?sslmode=no-verify` on the end. Railway's certificate is
+self-signed, so `sslmode=require` fails. This is the live shop's data: anything you order or sign up
+locally is real.

@@ -15,6 +15,8 @@
 export async function register() {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
   if (process.env.DATABASE_URL) return;
+  // Hosted deploys refuse the embedded database (see lib/db.ts), so there is nothing to warm up.
+  if (process.env.VERCEL || process.env.RAILWAY_ENVIRONMENT) return;
   try {
     const { getPglite } = await import("./lib/pglite");
     await getPglite();

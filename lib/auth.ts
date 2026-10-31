@@ -23,12 +23,24 @@ export async function verifyPassword(password: string, stored: string) {
 
 // The session is a signed cookie: the customer id, when it expires, and an HMAC
 // over both. Nothing secret travels in it, and a forged one fails the signature.
-const SECRET = process.env.SESSION_SECRET || "soft-snuggle-dev-secret-change-me";
 const MAX_AGE_DAYS = 60;
 export const SESSION_COOKIE = "ss_session";
 export const SESSION_MAX_AGE = MAX_AGE_DAYS * 24 * 60 * 60;
 
-const sign = (body: string) => createHmac("sha256", SECRET).update(body).digest("base64url");
+// The fallback is written in this file for anyone to read, so on a live site it
+// would let anyone sign a cookie as any customer. Hosted deploys refuse it.
+// Read when a cookie is signed rather than at import, so `next build` still
+// runs without the variable.
+function secret() {
+  const value = process.env.SESSION_SECRET;
+  if (value) return value;
+  if (process.env.VERCEL || process.env.RAILWAY_ENVIRONMENT) {
+    throw new Error("SESSION_SECRET is not set. Add a long random value to the service's variables and redeploy.");
+  }
+  return "soft-snuggle-dev-secret-change-me";
+}
+
+const sign = (body: string) => createHmac("sha256", secret()).update(body).digest("base64url");
 
 export function createSession(customerId: number) {
   const body = `${customerId}.${Date.now() + SESSION_MAX_AGE * 1000}`;

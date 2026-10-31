@@ -25,18 +25,29 @@ async function connect(): Promise<Db> {
 
   if (url) {
     const { Pool } = await import("pg");
-    const pool = new Pool({ connectionString: url, max: 5 });
+    // Without a connect timeout a database that is down or unreachable leaves
+    // every request hanging instead of failing.
+    const pool = new Pool({ connectionString: url, max: 5, connectionTimeoutMillis: 10_000 });
+    // Railway's public proxy and most hosted Postgres close idle connections.
+    // node-postgres reports that as an "error" event on the pool, and an
+    // unhandled one takes the whole server down. The pool replaces the
+    // connection on the next query, so logging it is enough.
+    pool.on("error", (err) => console.error("idle database connection dropped", err.message));
+    const explained = <T>(run: () => Promise<T>) =>
+      run().catch((err) => {
+        throw withHint(err);
+      });
     db = {
-      query: async (sql, params) => {
-        const res = await pool.query(sql, params as unknown[]);
-        return { rows: res.rows };
-      },
-      exec: async (sql) => {
-        await pool.query(sql);
-      },
+      query: (sql, params) => explained(async () => ({ rows: (await pool.query(sql, params as unknown[])).rows })),
+      exec: (sql) => explained(async () => void (await pool.query(sql))),
     };
-  } else if (process.env.VERCEL) {
-    throw new Error("DATABASE_URL is not set. Add a Postgres database (Vercel → Storage → Neon) and redeploy.");
+  } else if (process.env.VERCEL || process.env.RAILWAY_ENVIRONMENT) {
+    // The embedded database writes to the server's own disk, which a hosted
+    // deploy throws away, so orders would vanish on the next deploy.
+    throw new Error(
+      "DATABASE_URL is not set. Add a Postgres database and set DATABASE_URL " +
+        "(Railway: DATABASE_URL = ${{Postgres.DATABASE_URL}}), then redeploy.",
+    );
   } else {
     const { getPglite } = await import("./pglite");
     const lite = await getPglite();
@@ -54,6 +65,21 @@ async function connect(): Promise<Db> {
   await db.exec(SCHEMA_SQL);
   await syncCatalogue(db);
   return selfHealing(db);
+}
+
+// The two mistakes that come up when pointing at a hosted database both fail
+// with a message that says nothing about the fix, so the fix is added to it.
+function withHint(err: unknown) {
+  if (!(err instanceof Error)) return err;
+  const code = (err as { code?: string }).code ?? "";
+  let hint = "";
+  if (/SELF_SIGNED_CERT|UNABLE_TO_VERIFY_LEAF_SIGNATURE/.test(code) || /self[- ]signed certificate/i.test(err.message)) {
+    hint = "The database uses a self-signed certificate (Railway does). End DATABASE_URL with ?sslmode=no-verify instead of ?sslmode=require.";
+  } else if (code === "ENOTFOUND" && /\.railway\.internal/.test(err.message)) {
+    hint = "postgres.railway.internal only works from inside Railway. On your own computer use the Postgres service's DATABASE_PUBLIC_URL.";
+  }
+  if (hint && !err.message.includes(hint)) err.message += `\n${hint}`;
+  return err;
 }
 
 // The connection is cached for the life of the process, so a schema added after
