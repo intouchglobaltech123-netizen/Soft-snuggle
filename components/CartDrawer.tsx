@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect } from "react";
-import { STORE, inr, shippingFor } from "@/lib/store";
+import { STORE, inr, shippingFor, shippingIsFree } from "@/lib/store";
 import { ProductThumb } from "./shop/ProductThumb";
 import { FlowerMark } from "./art/FlowerMark";
 import { useCart } from "./providers/CartProvider";
@@ -62,19 +62,30 @@ export function CartDrawer() {
             ) : (
               <>
                 <div className="px-6 pt-4">
-                  <p className="text-sm font-semibold text-ink-soft">
-                    {toFree > 0 ? (
-                      <>You&apos;re <b className="text-ink">{inr(toFree)}</b> away from free shipping</>
-                    ) : (
-                      <>Yay! Your order ships <b className="text-ink">free</b> 🎉</>
-                    )}
-                  </p>
-                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-cream">
-                    <motion.div
-                      className="h-full rounded-full bg-sage-deep"
-                      animate={{ width: `${Math.min(100, (subtotal / STORE.freeShippingAbove) * 100)}%` }}
-                    />
-                  </div>
+                  {/* With delivery free on everything there is no threshold to
+                      climb towards, so the progress bar would always be full
+                      and the nudge meaningless. Just say it ships free. */}
+                  {shippingIsFree ? (
+                    <p className="text-sm font-semibold text-ink-soft">
+                      Your order ships <b className="text-ink">free</b> 🎉
+                    </p>
+                  ) : (
+                    <>
+                      <p className="text-sm font-semibold text-ink-soft">
+                        {toFree > 0 ? (
+                          <>You&apos;re <b className="text-ink">{inr(toFree)}</b> away from free shipping</>
+                        ) : (
+                          <>Yay! Your order ships <b className="text-ink">free</b> 🎉</>
+                        )}
+                      </p>
+                      <div className="mt-2 h-2 overflow-hidden rounded-full bg-cream">
+                        <motion.div
+                          className="h-full rounded-full bg-sage-deep"
+                          animate={{ width: `${Math.min(100, (subtotal / STORE.freeShippingAbove) * 100)}%` }}
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <ul className="flex-1 space-y-3 overflow-y-auto px-6 py-4" data-lenis-prevent>

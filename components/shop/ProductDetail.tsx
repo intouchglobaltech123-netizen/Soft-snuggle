@@ -6,7 +6,7 @@ import { useLenis } from "lenis/react";
 import { useEffect, useRef, useState } from "react";
 import { defaultColour } from "@/lib/colours";
 import { isStudioShot } from "@/lib/photo";
-import { CATEGORY_LABELS, STORE, inr, isSoldOut } from "@/lib/store";
+import { CATEGORY_LABELS, STORE, inr, isSoldOut, shippingIsFree } from "@/lib/store";
 import type { Product } from "@/lib/types";
 import { FlowerMark } from "../art/FlowerMark";
 import { Garment } from "../art/Garment";
@@ -90,7 +90,11 @@ export function ProductDetail({ product }: { product: Product }) {
     {
       key: "delivery",
       title: "Delivery & exchanges",
-      body: `Free shipping on orders over ${inr(STORE.freeShippingAbove)}, otherwise ${inr(STORE.shippingFlat)}. Ships in 1–2 days, arrives in 3–7 days across India. Wrong size? Easy size exchange within 7 days.`,
+      body: `${
+        shippingIsFree
+          ? "Free shipping on every order."
+          : `Free shipping on orders over ${inr(STORE.freeShippingAbove)}, otherwise ${inr(STORE.shippingFlat)}.`
+      } Ships in 1–2 days, arrives in 3–7 days across India. Wrong size? Easy size exchange within 7 days.`,
     },
   ];
 
@@ -318,7 +322,7 @@ export function ProductDetail({ product }: { product: Product }) {
         />
 
         <ul className="mt-5 grid grid-cols-2 gap-2 text-xs text-ink-soft sm:mt-6 sm:text-sm">
-          {["🕒 24×7 ordering", "🚚 Free over " + inr(STORE.freeShippingAbove), "💵 Cash on Delivery", "🔁 Easy size exchange"].map((t) => (
+          {["🕒 24×7 ordering", shippingIsFree ? "🚚 Free delivery" : "🚚 Free over " + inr(STORE.freeShippingAbove), "💵 Cash on Delivery", "🔁 Easy size exchange"].map((t) => (
             <li key={t} className="rounded-2xl bg-paper px-2.5 py-2.5 font-semibold sm:px-4 sm:py-3">{t}</li>
           ))}
         </ul>

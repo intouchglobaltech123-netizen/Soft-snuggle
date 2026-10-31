@@ -3,7 +3,9 @@
 export const STORE = {
   name: "Soft Snuggle",
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919585692553",
-  shippingFlat: Number(process.env.NEXT_PUBLIC_SHIPPING_FLAT ?? 79),
+  // Free delivery on every order. Set NEXT_PUBLIC_SHIPPING_FLAT to bring a
+  // charge back; the copy around the site follows this number on its own.
+  shippingFlat: Number(process.env.NEXT_PUBLIC_SHIPPING_FLAT || 0),
   freeShippingAbove: Number(process.env.NEXT_PUBLIC_FREE_SHIPPING_ABOVE ?? 1499),
   instagram: "https://instagram.com/",
   email: "softsnuggle2026@gmail.com",
@@ -35,6 +37,14 @@ export function shippingFor(subtotal: number) {
   if (subtotal === 0 || subtotal >= STORE.freeShippingAbove) return 0;
   return STORE.shippingFlat;
 }
+
+/** True while delivery costs nothing whatever the order comes to. */
+export const shippingIsFree = STORE.shippingFlat === 0;
+
+/** The shipping promise, as one short line. */
+export const shippingLine = shippingIsFree
+  ? "Free shipping on all orders"
+  : `Free shipping over ${inr(STORE.freeShippingAbove)}`;
 
 export function inr(amount: number) {
   return "₹" + amount.toLocaleString("en-IN");

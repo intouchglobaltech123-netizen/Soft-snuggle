@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { AGE_GROUPS, STORE, inr } from "@/lib/store";
+import { AGE_GROUPS, STORE, inr, shippingLine } from "@/lib/store";
 import type { Category } from "@/lib/types";
 import { Garment } from "../art/Garment";
 import { FlowerMark } from "../art/FlowerMark";
@@ -13,7 +13,7 @@ const BANNERS: Record<string, { eyebrow: string; title: string; accent: string; 
     accent: "little things",
     body: "Frocks, jablas, nappies, sets and gift packs for every new chapter.",
     tint: "#DFE7DD",
-    perks: ["Soft cotton", `Free shipping over ${inr(STORE.freeShippingAbove)}`, "Cash on Delivery"],
+    perks: ["Soft cotton", shippingLine, "Cash on Delivery"],
     art: [
       { category: "jabla", color: "#F3EBC4" },
       { category: "frock", color: "#F4D9D6" },

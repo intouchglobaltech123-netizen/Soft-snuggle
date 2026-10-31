@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { STORE, inr } from "@/lib/store";
+import { STORE, inr, shippingIsFree } from "@/lib/store";
 
 // Draft copy. Replace with the client's approved wording before launch.
 const POLICIES: Record<string, { title: string; sections: [string, string][] }> = {
@@ -8,7 +8,12 @@ const POLICIES: Record<string, { title: string; sections: [string, string][] }> 
     title: "Shipping",
     sections: [
       ["Where we ship", "We deliver across India through our courier partners."],
-      ["Charges", `Free shipping on orders over ${inr(STORE.freeShippingAbove)}. Below that, a flat ${inr(STORE.shippingFlat)} applies.`],
+      [
+        "Charges",
+        shippingIsFree
+          ? "Delivery is free on every order, whatever it comes to. No minimum."
+          : `Free shipping on orders over ${inr(STORE.freeShippingAbove)}. Below that, a flat ${inr(STORE.shippingFlat)} applies.`,
+      ],
       ["Dispatch & delivery", "Orders are packed and dispatched within 1–2 working days after confirmation on WhatsApp. Delivery usually takes 3–7 working days depending on your pincode."],
       ["Cash on Delivery", "COD is available on most pincodes. Please keep the exact amount ready when your parcel arrives."],
       ["Tracking your order", "Once your parcel ships, we share the courier name and tracking number on WhatsApp. You can also see every step anytime on the Track order page with your order ID and mobile number."],

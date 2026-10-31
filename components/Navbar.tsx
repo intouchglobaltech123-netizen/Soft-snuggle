@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { useLenis } from "lenis/react";
 import { useEffect, useRef, useState } from "react";
-import { STORE, inr } from "@/lib/store";
+import { STORE, inr, shippingLine } from "@/lib/store";
 import { Logo } from "./art/Logo";
 import { WhatsAppIcon } from "@/components/art/WhatsAppIcon";
 import { useAccount } from "./providers/AccountProvider";
@@ -80,7 +80,7 @@ export function Navbar() {
         {/* One line on every screen: phones get the short version so it never wraps */}
         <div className="relative truncate bg-sage-deep px-4 py-1.5 text-center text-[10.5px] font-bold uppercase tracking-[0.12em] text-paper sm:text-[11px] sm:tracking-[0.14em]">
           <span className="hidden sm:inline">24×7 ordering available · </span>
-          Free shipping over {inr(STORE.freeShippingAbove)}
+          {shippingLine}
           <span className="sm:hidden"> · COD available</span>
           <span className="hidden lg:inline"> · Cash on Delivery</span>
           <Link
