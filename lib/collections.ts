@@ -259,6 +259,20 @@ export const COLLECTIONS: Collection[] = [
     },
   },
   {
+    slug: "watermelon",
+    productSlug: "watermelon-set",
+    eyebrow: "New in",
+    title: "Watermelon",
+    accent: "Slice",
+    label: "Watermelon Slice Set",
+    blurb: "Watermelon slices on blush muslin, with a peplum top and wide-leg trousers that swish.",
+    glow: "#F8E4E2",
+    look: {
+      skin: "#E8BE9C", hair: "#3A2A1E", hairStyle: "curls", outfit: "#F9DEDC",
+      kind: "romper", detail: "heart", accessory: "bow", accessoryColor: "#F2B8B0", prop: "none",
+    },
+  },
+  {
     slug: "day-pack",
     productSlug: "day-pack",
     eyebrow: "Gift ready",

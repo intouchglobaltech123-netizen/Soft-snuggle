@@ -310,6 +310,22 @@ const RAW: Omit<SeedProduct, "ageGroups">[] = [
     garment: "#B4552C",
   },
   {
+    slug: "watermelon-set",
+    name: "Watermelon Slice Set",
+    category: "set",
+    fabric: "50% bamboo, 50% cotton",
+    colour: "Blush pink, watermelon print",
+    price: 599,
+    badge: "New",
+    organic: false,
+    sizes: CHART_SIZES,
+    description:
+      "Little watermelon slices scattered over blush crinkled muslin. The top has frilled flutter sleeves and a peplum hem with a button at the back of the neck, and the wide-leg trousers sit on a soft covered waist.",
+    care: "Hand wash or gentle machine wash cold. Dry in shade. Do not bleach.",
+    tint: "#F8E4E2",
+    garment: "#F9DEDC",
+  },
+  {
     slug: "day-pack",
     name: "The Day Pack",
     category: "gift-set",
