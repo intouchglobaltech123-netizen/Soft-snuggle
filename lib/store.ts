@@ -3,9 +3,17 @@
 export const STORE = {
   name: "Soft Snuggle",
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919585692553",
-  // Free delivery on every order. Set NEXT_PUBLIC_SHIPPING_FLAT to bring a
-  // charge back; the copy around the site follows this number on its own.
-  shippingFlat: Number(process.env.NEXT_PUBLIC_SHIPPING_FLAT || 0),
+  // Delivery is free on every order.
+  //
+  // This deliberately ignores NEXT_PUBLIC_SHIPPING_FLAT. That variable is
+  // baked in when the server starts, so a stale 79 left in a local .env kept
+  // coming back at checkout however many times the default changed. The
+  // number lives here instead, where it is the same for everyone.
+  //
+  // To charge for delivery again, put the amount here. The wording around the
+  // site follows it: 0 reads "free on all orders", anything else goes back to
+  // "free over <threshold>" with the cart's countdown and progress bar.
+  shippingFlat: 0,
   freeShippingAbove: Number(process.env.NEXT_PUBLIC_FREE_SHIPPING_ABOVE ?? 1499),
   instagram: "https://instagram.com/",
   email: "softsnuggle2026@gmail.com",
