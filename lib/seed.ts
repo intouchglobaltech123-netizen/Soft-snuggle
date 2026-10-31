@@ -326,6 +326,22 @@ const RAW: Omit<SeedProduct, "ageGroups">[] = [
     garment: "#F9DEDC",
   },
   {
+    slug: "arrow-trail-jabla",
+    name: "Arrow Trail Jabla",
+    category: "jabla",
+    fabric: "50% bamboo, 50% cotton",
+    colour: "White, orange and plum arrows",
+    price: 349,
+    badge: "New",
+    organic: false,
+    sizes: CHART_SIZES,
+    description:
+      "A strappy muslin top printed with little orange and plum arrows marching up and down. The shoulder straps tie, so the length grows with the baby and nothing has to go over the head.",
+    care: "Hand wash or gentle machine wash cold. Dry in shade. Do not bleach.",
+    tint: "#F6EFE7",
+    garment: "#FBFAF7",
+  },
+  {
     slug: "day-pack",
     name: "The Day Pack",
     category: "gift-set",

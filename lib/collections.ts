@@ -273,6 +273,20 @@ export const COLLECTIONS: Collection[] = [
     },
   },
   {
+    slug: "arrow-trail",
+    productSlug: "arrow-trail-jabla",
+    eyebrow: "New in",
+    title: "Arrow",
+    accent: "Trail",
+    label: "Arrow Trail Jabla",
+    blurb: "Little orange and plum arrows across white muslin, on a strappy top that ties at the shoulders.",
+    glow: "#F6EFE7",
+    look: {
+      skin: "#D9A47F", hair: "#3A2A1E", hairStyle: "curls", outfit: "#FBFAF7",
+      kind: "bodysuit", detail: "star", accessory: "bow", accessoryColor: "#E08A4C", prop: "none",
+    },
+  },
+  {
     slug: "day-pack",
     productSlug: "day-pack",
     eyebrow: "Gift ready",
