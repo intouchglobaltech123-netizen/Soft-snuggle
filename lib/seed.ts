@@ -40,7 +40,9 @@ const RAW: Omit<SeedProduct, "ageGroups">[] = [
     category: "frock",
     fabric: "50% bamboo, 50% cotton",
     colour: "Butter yellow, cherry print",
-    price: 349,
+    // Temporary test price so a real order can be put through the checkout
+    // end to end. Put this back to 349 before the shop takes real orders.
+    price: 1,
     badge: "New",
     organic: false,
     sizes: CHART_SIZES,
