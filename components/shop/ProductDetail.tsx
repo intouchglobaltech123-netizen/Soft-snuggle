@@ -12,6 +12,7 @@ import { FlowerMark } from "../art/FlowerMark";
 import { Garment } from "../art/Garment";
 import { QtyStepper } from "../CartDrawer";
 import { useCart } from "../providers/CartProvider";
+import { Lightbox } from "./Lightbox";
 import { SaveButton } from "./SaveButton";
 import { SizeChart } from "./SizeChart";
 
@@ -40,6 +41,19 @@ export function ProductDetail({ product }: { product: Product }) {
   }, []);
   const photos = product.images;
   const [photo, setPhoto] = useState(0);
+  // Where the cursor is over the photo, as percentages, so the zoom pushes
+  // towards the part being looked at rather than the middle.
+  const [lens, setLens] = useState<{ x: number; y: number } | null>(null);
+  const [full, setFull] = useState<number | null>(null);
+  // A phone has no cursor to follow, so it gets the tap-to-open viewer only.
+  const [canHover, setCanHover] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const sync = () => setCanHover(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
   // The frame takes the shape of the photo inside it, so a wide gift box does
   // not sit in a tall box with empty colour above and below it. The size is
   // read from a detached Image rather than an onLoad handler, because a photo
@@ -107,11 +121,24 @@ export function ProductDetail({ product }: { product: Product }) {
       <div className="mx-auto w-full max-w-[440px] lg:sticky lg:top-28 lg:self-start">
         <div>
           <motion.div
-            className={`relative overflow-hidden rounded-[32px] ${photos.length > 0 ? "" : "aspect-square"}`}
+            className={`relative overflow-hidden rounded-[32px] ${photos.length > 0 ? "cursor-zoom-in" : "aspect-square"}`}
             style={{
               background: product.tint,
               ...(photos.length > 0 ? { aspectRatio: frameRatio } : {}),
             }}
+            onMouseMove={
+              canHover && photos.length > 0
+                ? (e) => {
+                    const r = e.currentTarget.getBoundingClientRect();
+                    setLens({
+                      x: ((e.clientX - r.left) / r.width) * 100,
+                      y: ((e.clientY - r.top) / r.height) * 100,
+                    });
+                  }
+                : undefined
+            }
+            onMouseLeave={() => setLens(null)}
+            onClick={photos.length > 0 ? () => setFull(photo) : undefined}
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -122,11 +149,15 @@ export function ProductDetail({ product }: { product: Product }) {
                   key={photos[photo]}
                   src={photos[photo]}
                   alt={product.name}
-                  className={`absolute inset-0 h-full w-full object-cover ${isStudioShot(photos[photo]) ? "mix-blend-multiply" : ""}`}
-                  initial={{ opacity: 0, scale: 1.06 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  className={`absolute inset-0 h-full w-full object-cover transition-transform duration-200 ease-out ${isStudioShot(photos[photo]) ? "mix-blend-multiply" : ""}`}
+                  style={{
+                    transformOrigin: lens ? `${lens.x}% ${lens.y}%` : "center",
+                    transform: lens ? "scale(2.2)" : "scale(1)",
+                  }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                   draggable={false}
                 />
               </AnimatePresence>
@@ -153,6 +184,16 @@ export function ProductDetail({ product }: { product: Product }) {
                 </motion.div>
               </AnimatePresence>
                 </>
+            )}
+            {photos.length > 0 && !lens && (
+              <span className="pointer-events-none absolute bottom-4 right-4 flex items-center gap-1.5 rounded-full bg-paper/90 px-3 py-1.5 text-[11px] font-bold text-ink shadow-sm backdrop-blur">
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="m20 20-3.5-3.5M11 8.5v5M8.5 11h5" />
+                </svg>
+                <span className="hidden sm:inline">Hover to zoom · click to enlarge</span>
+                <span className="sm:hidden">Tap to enlarge</span>
+              </span>
             )}
             {product.badge && (
               <span className="absolute left-5 top-5 rounded-full bg-paper px-4 py-1.5 text-xs font-extrabold uppercase tracking-[0.14em]">
@@ -192,6 +233,16 @@ export function ProductDetail({ product }: { product: Product }) {
           <p className="mt-2 text-center text-xs text-ink-soft">Illustration shown · product photos coming soon</p>
             </>
         )}
+        <Lightbox
+          photos={photos}
+          index={full}
+          onIndex={(i) => {
+            setFull(i);
+            setPhoto(i);
+          }}
+          onClose={() => setFull(null)}
+          alt={product.name}
+        />
       </div>
 
       {/* Info */}
