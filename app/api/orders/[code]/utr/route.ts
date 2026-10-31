@@ -12,6 +12,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ code: s
     return NextResponse.json({ error: "Please enter the 12-digit UTR / transaction ID from your UPI app." }, { status: 422 });
   }
   const ok = await submitUtr(code, key, utr);
-  if (!ok) return NextResponse.json({ error: "Order not found." }, { status: 404 });
+  if (!ok) {
+    return NextResponse.json(
+      { error: "We couldn't update this order. It may already be confirmed — message us on WhatsApp if you need help." },
+      { status: 404 },
+    );
+  }
   return NextResponse.json({ ok: true, utr });
 }

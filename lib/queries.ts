@@ -10,7 +10,7 @@ type ProductRow = {
   id: number; slug: string; name: string; category: Product["category"]; fabric: string;
   colour: string; price: number; compare_at: number | null; badge: string | null;
   organic: boolean; sizes: string[]; age_groups: string[]; description: string; care: string;
-  tint: string; garment: string; in_stock: boolean;
+  tint: string; garment: string; in_stock: boolean; sold_out_sizes: string[] | null;
 };
 
 function toProduct(r: ProductRow): Product {
@@ -20,6 +20,7 @@ function toProduct(r: ProductRow): Product {
     colour: r.colour, price: r.price, compareAt: r.compare_at, badge: r.badge,
     organic: r.organic, sizes: r.sizes, ageGroups: r.age_groups, description: r.description,
     care: r.care, tint: r.tint, garment: r.garment, inStock: r.in_stock,
+    soldOutSizes: r.sold_out_sizes ?? [],
     images,
     colours: coloursFor({ slug: r.slug, colour: r.colour, garment: r.garment, category: r.category }),
   };
@@ -63,6 +64,9 @@ export async function createOrder(input: NewOrderInput) {
     const p = byId.get(i.productId);
     if (!p || !p.in_stock) throw new OrderError("One of the items in your bag is no longer available.");
     if (!p.sizes.includes(i.size)) throw new OrderError(`Size ${i.size} is not available for ${p.name}.`);
+    if (p.sold_out_sizes?.includes(i.size)) {
+      throw new OrderError(`Size ${i.size} of ${p.name} has just sold out. Please remove it from your bag.`);
+    }
     const options = coloursFor({ slug: p.slug, colour: p.colour, garment: p.garment, category: p.category });
     const colour = i.colour ? options.find((c) => c.name === i.colour)?.name : undefined;
     if (i.colour && !colour) throw new OrderError(`Colour ${i.colour} is not available for ${p.name}.`);
@@ -74,12 +78,12 @@ export async function createOrder(input: NewOrderInput) {
   const total = subtotal + shipping;
   const accessKey = randomBytes(12).toString("hex");
 
-  const res = await db.query<{ code: string }>(
+  const res = await db.query<{ id: number; code: string }>(
     `INSERT INTO orders
       (access_key, customer_name, phone, email, address, city, state, pincode,
        items, subtotal, shipping, total, payment_method, payment_status, customer_id)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
-     RETURNING code`,
+     RETURNING id, code`,
     [
       accessKey, input.customerName, input.phone, input.email, input.address, input.city,
       input.state, input.pincode, JSON.stringify(items), subtotal, shipping, total,
@@ -87,7 +91,16 @@ export async function createOrder(input: NewOrderInput) {
       input.customerId ?? null,
     ],
   );
+  await logOrderEvent(res.rows[0].id, "placed", input.paymentMethod === "cod" ? "Cash on delivery" : "UPI", "customer");
   return { code: res.rows[0].code, accessKey, total };
+}
+
+/** One line of an order's history, shown on the admin order page. */
+export async function logOrderEvent(orderId: number, kind: string, note: string | null, actor: string) {
+  const db = await getDb();
+  await db.query("INSERT INTO order_events (order_id, kind, note, actor) VALUES ($1, $2, $3, $4)", [
+    orderId, kind, note, actor,
+  ]);
 }
 
 type OrderRow = {
@@ -117,12 +130,16 @@ export async function getOrder(code: string, accessKey: string): Promise<Order |
 
 export async function submitUtr(code: string, accessKey: string, utr: string) {
   const db = await getDb();
-  const { rows } = await db.query<{ code: string }>(
+  // Only while the payment is still unchecked: once the owner has marked it
+  // paid, sending a UTR again would quietly put it back to "submitted".
+  const { rows } = await db.query<{ id: number }>(
     `UPDATE orders SET utr = $3, payment_status = 'submitted', updated_at = now()
      WHERE code = $1 AND access_key = $2 AND payment_method = 'upi'
-     RETURNING code`,
+       AND payment_status IN ('pending', 'submitted')
+     RETURNING id`,
     [code, accessKey, utr],
   );
+  if (rows[0]) await logOrderEvent(rows[0].id, "utr_submitted", utr, "customer");
   return rows.length > 0;
 }
 

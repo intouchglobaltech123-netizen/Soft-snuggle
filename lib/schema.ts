@@ -111,6 +111,23 @@ ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_id INTEGER REFERENCES custo
 CREATE INDEX IF NOT EXISTS orders_customer_idx ON orders (customer_id);
 CREATE INDEX IF NOT EXISTS orders_phone_idx ON orders (phone);
 
+-- Sizes the owner marks sold out in the admin panel. Like in_stock, the
+-- catalogue sync leaves this alone, so it survives a deploy.
+ALTER TABLE products ADD COLUMN IF NOT EXISTS sold_out_sizes TEXT[] NOT NULL DEFAULT '{}';
+
+-- Everything that happened to an order and who did it: placed, UTR sent,
+-- confirmed, shipped, notes. The admin order page shows it as the history.
+CREATE TABLE IF NOT EXISTS order_events (
+  id          SERIAL PRIMARY KEY,
+  order_id    INTEGER NOT NULL REFERENCES orders (id) ON DELETE CASCADE,
+  kind        TEXT NOT NULL,
+  note        TEXT,
+  actor       TEXT,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS order_events_order_idx ON order_events (order_id, id);
+CREATE INDEX IF NOT EXISTS orders_status_idx ON orders (status);
+
 CREATE TABLE IF NOT EXISTS subscribers (
   id          SERIAL PRIMARY KEY,
   email       TEXT UNIQUE NOT NULL,

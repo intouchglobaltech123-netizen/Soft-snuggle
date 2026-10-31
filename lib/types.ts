@@ -33,6 +33,8 @@ export interface Product {
   /** Colour the garment illustration is drawn in */
   garment: string;
   inStock: boolean;
+  /** Sizes the owner has marked sold out; the rest of the product can still be bought */
+  soldOutSizes: string[];
   /** Colour choices shown as round swatches on the product page */
   colours: ColourOption[];
   /** Real photos from public/products/<slug>; empty means use the illustration */

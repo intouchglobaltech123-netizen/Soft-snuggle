@@ -1,13 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Nunito } from "next/font/google";
-import { CartDrawer } from "@/components/CartDrawer";
-import { Footer } from "@/components/Footer";
-import { Loader } from "@/components/Loader";
-import { Navbar } from "@/components/Navbar";
+import { ShopChrome } from "@/components/ShopChrome";
 import { AccountProvider } from "@/components/providers/AccountProvider";
 import { CartProvider } from "@/components/providers/CartProvider";
 import { IntroProvider } from "@/components/providers/IntroProvider";
-import { SmoothScroll } from "@/components/providers/SmoothScroll";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -39,19 +35,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         mismatches in the app are still reported.
       */}
       <body suppressHydrationWarning>
-        <SmoothScroll>
-          <IntroProvider>
-            <AccountProvider>
-              <CartProvider>
-              <Loader />
-              <Navbar />
-              <main>{children}</main>
-              <Footer />
-              <CartDrawer />
-              </CartProvider>
-            </AccountProvider>
-          </IntroProvider>
-        </SmoothScroll>
+        <IntroProvider>
+          <AccountProvider>
+            <CartProvider>
+              <ShopChrome>{children}</ShopChrome>
+            </CartProvider>
+          </AccountProvider>
+        </IntroProvider>
       </body>
     </html>
   );

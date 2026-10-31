@@ -11,7 +11,7 @@ export interface Db {
 // Bump this whenever SCHEMA_SQL changes. The connection below outlives a code
 // reload, so without a version the new schema is never applied to it and the
 // site keeps failing until someone restarts the server by hand.
-const SCHEMA_VERSION = 12;
+const SCHEMA_VERSION = 13;
 
 // Survives hot reloads in dev so we never open the database twice.
 const globalForDb = globalThis as unknown as {
@@ -135,9 +135,9 @@ function selfHealing(db: Db): Db {
 // is enough to retire a piece. Past orders are unaffected: each order stores
 // its own copy of what was bought, name and price included.
 //
-// in_stock is the one thing left alone, since the owner sets it in the
-// database and the seed file knows nothing about it: a sold-out piece stays
-// sold out across a deploy.
+// in_stock and sold_out_sizes are left alone, since the owner sets them in the
+// admin panel and the seed file knows nothing about them: a sold-out piece
+// stays sold out across a deploy.
 async function syncCatalogue(db: Db) {
   for (const [i, p] of SEED_PRODUCTS.entries()) {
     await db.query(

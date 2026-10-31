@@ -6,7 +6,7 @@ import { useLenis } from "lenis/react";
 import { useEffect, useRef, useState } from "react";
 import { defaultColour } from "@/lib/colours";
 import { isStudioShot } from "@/lib/photo";
-import { CATEGORY_LABELS, STORE, inr } from "@/lib/store";
+import { CATEGORY_LABELS, STORE, inr, isSoldOut } from "@/lib/store";
 import type { Product } from "@/lib/types";
 import { FlowerMark } from "../art/FlowerMark";
 import { Garment } from "../art/Garment";
@@ -21,6 +21,7 @@ export function ProductDetail({ product }: { product: Product }) {
   const { add } = useCart();
   const [view, setView] = useState<(typeof VIEWS)[number]>("Front");
   const [size, setSize] = useState<string | null>(null);
+  const available = !isSoldOut(product);
   const [colour, setColour] = useState(() => defaultColour(product, product.colours));
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
@@ -262,7 +263,9 @@ export function ProductDetail({ product }: { product: Product }) {
                 <button
                   key={s}
                   onClick={() => setSize(s)}
-                  className={`relative rounded-2xl border px-2 py-2.5 text-sm font-bold transition-colors sm:min-w-20 sm:px-4 sm:py-3 sm:text-base ${
+                  disabled={product.soldOutSizes.includes(s)}
+                  title={product.soldOutSizes.includes(s) ? "Sold out" : undefined}
+                  className={`relative rounded-2xl border px-2 py-2.5 text-sm font-bold transition-colors disabled:border-dashed disabled:bg-transparent disabled:text-ink-soft/60 disabled:line-through sm:min-w-20 sm:px-4 sm:py-3 sm:text-base ${
                     size === s ? "border-ink text-paper" : needSize ? "border-rose" : "border-line bg-paper hover:border-ink/40"
                   }`}
                 >
@@ -290,7 +293,7 @@ export function ProductDetail({ product }: { product: Product }) {
           <QtyStepper value={qty} onChange={(v) => setQty(Math.max(1, v))} />
           <motion.button
             onClick={addToBag}
-            disabled={!product.inStock}
+            disabled={!available}
             whileTap={{ scale: 0.97 }}
             className={`btn-primary flex-1 py-3.5 text-[15px] sm:py-4 sm:text-base ${added ? "!bg-sage-deep" : ""}`}
           >
@@ -302,7 +305,7 @@ export function ProductDetail({ product }: { product: Product }) {
                 exit={{ y: -14, opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                {!product.inStock ? "Sold out" : added ? "Added to bag ✓" : size ? `Add to bag · ${inr(product.price * qty)}` : "Select a size"}
+                {!available ? "Sold out" : added ? "Added to bag ✓" : size ? `Add to bag · ${inr(product.price * qty)}` : "Select a size"}
               </motion.span>
             </AnimatePresence>
           </motion.button>
@@ -348,7 +351,7 @@ export function ProductDetail({ product }: { product: Product }) {
       </motion.div>
 
       <AnimatePresence>
-        {!buyVisible && product.inStock && (
+        {!buyVisible && available && (
           <motion.div
             className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-10px_30px_-18px_rgba(38,59,54,0.5)] backdrop-blur-md lg:hidden"
             initial={{ y: "100%" }}

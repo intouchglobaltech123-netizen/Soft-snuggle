@@ -19,13 +19,8 @@ Tables (`products`, `orders`, `subscribers`) are created automatically on first 
 and the 8 catalogue products from the PDF are seeded if `products` is empty (`lib/seed.ts`).
 Orders get IDs like `SS-1001` automatically.
 
-There is no admin panel. Use any Postgres client (TablePlus, pgAdmin, Neon console) to see orders or
-edit products:
-
-```sql
-SELECT code, customer_name, phone, total, payment_method, payment_status, utr, created_at
-FROM orders ORDER BY id DESC;
-```
+Orders and stock are managed in the admin panel (below). Products, prices and photos still live in
+`lib/seed.ts` and `public/products/`.
 
 ## Order flow
 
@@ -37,27 +32,25 @@ FROM orders ORDER BY id DESC;
    - **COD** → goes straight to the WhatsApp step.
 5. "Send order on WhatsApp" opens WhatsApp with a pre-filled message (items, total, UTR or COD, address). The customer taps Send.
 
-## Order tracking (no admin page)
+## Admin panel (`/admin`)
 
-Customers check their order at `/track` with their order ID and mobile number. You move an order along by
-updating it in the database (Neon / Supabase console, TablePlus, pgAdmin, or `psql`):
+Sign in with Google. Only the accounts in `ADMIN_EMAILS` get in, checked on every request, so removing
+an address locks it out immediately. Needs `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` (see `.env.example`).
 
-```sql
--- payment checked / order confirmed
-UPDATE orders SET status = 'confirmed', payment_status = 'paid', confirmed_at = now(), updated_at = now() WHERE code = 'SS-1042';
+- **Dashboard**: orders and sales today / 7 days / 30 days (Indian time), and what needs doing: UPI
+  payments to check, COD to confirm, to pack, to ship, in transit.
+- **Orders**: tabs by status, search by order ID, phone or name. Each order shows items, address
+  (copy, call, WhatsApp), UTR, and the next step:
+  `new → confirmed → packed → shipped (courier + tracking no.) → out for delivery → delivered`, or cancelled
+  (with a reason; can be reopened). Confirming a UPI order marks it paid. Every step and note is kept in
+  the order's history with who did it.
+- **Stock**: take a piece off sale, or mark single sizes sold out. Sold-out sizes are crossed out in the
+  shop and refused at checkout.
 
--- packed
-UPDATE orders SET status = 'packed', updated_at = now() WHERE code = 'SS-1042';
+Customers follow the same steps at `/track` (order ID + mobile number), or from their account.
 
--- handed to the courier (tracking_url is optional; without it the page links a search for the number)
-UPDATE orders SET status = 'shipped', courier = 'Delhivery', tracking_number = '1234567890',
-  tracking_url = NULL, shipped_at = now(), updated_at = now() WHERE code = 'SS-1042';
-
--- out for delivery / delivered / cancelled
-UPDATE orders SET status = 'out_for_delivery', updated_at = now() WHERE code = 'SS-1042';
-UPDATE orders SET status = 'delivered', delivered_at = now(), updated_at = now() WHERE code = 'SS-1042';
-UPDATE orders SET status = 'cancelled', updated_at = now() WHERE code = 'SS-1042';
-```
+The code is in `app/admin/`, `app/api/admin/`, `components/admin/` and `lib/admin*.ts`. Admin APIs refuse
+requests from other sites (Origin check), and admin pages are marked noindex.
 
 ## Where to change things
 
@@ -95,6 +88,7 @@ The live site runs on Railway (`soft-snuggle-production.up.railway.app`), deploy
 2. On the app service's **Variables**, add:
    - `DATABASE_URL` = `${{Postgres.DATABASE_URL}}` (Railway's private network; no SSL setting needed)
    - `SESSION_SECRET` = a long random value (`openssl rand -base64 32`)
+   - `ADMIN_EMAILS`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` for the admin panel
    - the WhatsApp, UPI and shipping values from `.env.example`
 3. Redeploy. The first start creates the tables and loads the catalogue.
 

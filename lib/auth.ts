@@ -42,12 +42,13 @@ function secret() {
 
 const sign = (body: string) => createHmac("sha256", secret()).update(body).digest("base64url");
 
-export function createSession(customerId: number) {
-  const body = `${customerId}.${Date.now() + SESSION_MAX_AGE * 1000}`;
+/** body.signature: for anything handed to the browser that must come back unchanged. */
+export function seal(body: string) {
   return `${body}.${sign(body)}`;
 }
 
-export function readSession(token: string | undefined): number | null {
+/** The body if the signature is ours, otherwise null. */
+export function unseal(token: string | undefined): string | null {
   if (!token) return null;
   const i = token.lastIndexOf(".");
   if (i < 0) return null;
@@ -55,8 +56,19 @@ export function readSession(token: string | undefined): number | null {
   const sig = token.slice(i + 1);
   const expected = sign(body);
   if (sig.length !== expected.length || !timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null;
+  return body;
+}
+
+export function createSession(customerId: number) {
+  return seal(`${customerId}.${Date.now() + SESSION_MAX_AGE * 1000}`);
+}
+
+export function readSession(token: string | undefined): number | null {
+  const body = unseal(token);
+  if (!body) return null;
   const [id, expiry] = body.split(".");
-  if (!id || !expiry || Number(expiry) < Date.now()) return null;
+  // Digits only, so another kind of signed token (an admin session, say) is never read as a customer.
+  if (!/^\d+$/.test(id ?? "") || !expiry || Number(expiry) < Date.now()) return null;
   return Number(id);
 }
 

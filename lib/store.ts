@@ -26,6 +26,11 @@ export const CATEGORY_LABELS = {
   "gift-set": "Gift Sets",
 } as const;
 
+/** Taken off sale, or every size marked sold out in the admin panel. */
+export function isSoldOut(p: { inStock: boolean; sizes: string[]; soldOutSizes: string[] }) {
+  return !p.inStock || p.sizes.every((s) => p.soldOutSizes.includes(s));
+}
+
 export function shippingFor(subtotal: number) {
   if (subtotal === 0 || subtotal >= STORE.freeShippingAbove) return 0;
   return STORE.shippingFlat;

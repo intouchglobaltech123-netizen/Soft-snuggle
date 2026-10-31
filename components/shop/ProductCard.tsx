@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { isStudioShot } from "@/lib/photo";
-import { inr } from "@/lib/store";
+import { inr, isSoldOut } from "@/lib/store";
 import type { Product } from "@/lib/types";
 import { Garment } from "../art/Garment";
 import { BagIcon } from "../Navbar";
@@ -15,6 +15,7 @@ export function ProductCard({ product, wide = false }: { product: Product; wide?
   const { add } = useCart();
   const [picking, setPicking] = useState(false);
   const [front] = product.images;
+  const available = !isSoldOut(product);
 
   const addSize = (size: string) => {
     add({
@@ -87,7 +88,9 @@ export function ProductCard({ product, wide = false }: { product: Product; wide?
                     <button
                       key={s}
                       onClick={() => addSize(s)}
-                      className="rounded-full border border-ink/15 bg-paper px-2.5 py-1.5 text-xs font-bold transition-colors hover:bg-ink hover:text-paper sm:px-3"
+                      disabled={product.soldOutSizes.includes(s)}
+                      title={product.soldOutSizes.includes(s) ? "Sold out" : undefined}
+                      className="rounded-full border border-ink/15 bg-paper px-2.5 py-1.5 text-xs font-bold transition-colors hover:bg-ink hover:text-paper disabled:pointer-events-none disabled:bg-transparent disabled:text-ink-soft/60 disabled:line-through sm:px-3"
                     >
                       {s}
                     </button>
@@ -101,13 +104,13 @@ export function ProductCard({ product, wide = false }: { product: Product; wide?
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 24, opacity: 0 }}
                 onClick={() => setPicking(true)}
-                disabled={!product.inStock}
-                aria-label={product.inStock ? `Add ${product.name} to bag` : "Sold out"}
+                disabled={!available}
+                aria-label={available ? `Add ${product.name} to bag` : "Sold out"}
                 className={`ml-auto flex items-center justify-center rounded-full bg-ink text-[13px] font-bold text-paper shadow-md disabled:bg-ink/40 sm:w-full sm:rounded-2xl sm:py-2.5 sm:shadow-none ${
-                  product.inStock ? "h-10 w-10 sm:h-auto" : "h-8 px-3 text-[11px] sm:h-auto sm:text-[13px]"
+                  available ? "h-10 w-10 sm:h-auto" : "h-8 px-3 text-[11px] sm:h-auto sm:text-[13px]"
                 }`}
               >
-                {product.inStock ? (
+                {available ? (
                   <>
                     {/* Phones: a small round button, so the photo stays visible */}
                     <span className="relative sm:hidden" aria-hidden>
